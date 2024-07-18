@@ -116,7 +116,6 @@ GameObject:
   - component: {fileID: 8286604919590301159}
   - component: {fileID: 5458061058138225652}
   - component: {fileID: 7685860040588414134}
-  - component: {fileID: 4606740757774751247}
   m_Layer: 0
   m_Name: Hamster
   m_TagString: Untagged
@@ -133,7 +132,7 @@ Transform:
   m_GameObject: {fileID: 2943141955409483336}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -1.8489978, y: 0.897, z: 1.0832918}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -162,18 +161,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Age: 0
   transform: {fileID: 8286604919590301159}
---- !u!114 &4606740757774751247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2943141955409483336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d5ada41afb7bf8418dc8d55db2094aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3331521698894945736
 GameObject:
   m_ObjectHideFlags: 0
@@ -727,7 +714,7 @@ Transform:
   m_GameObject: {fileID: 7530311491634955674}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.000000029802322, y: 0.19147804, z: -0.14904088}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

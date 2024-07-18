@@ -10,8 +10,6 @@ public class Player : MonoBehaviour
 	private void Awake()
 	{
 		Initialize();
-		InputManager.OnLeftPressed += LeftInputPressed;
-		InputManager.onRightPressed += RightInputPressed;
 	}
 
 	private void RightInputPressed()
