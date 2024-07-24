@@ -8,14 +8,8 @@ public static class TilesManager
 	public static List<Tile> Tiles { get; private set; } = new List<Tile>();
 	public static int Rows { get; private set; }
 	public static int Columns { get; private set; }
-
-	public static void CreateTiles(List<Tile> tiles,int rows, int columns)
-	{
-		Tiles = tiles;
-		TilesManager.Rows = rows;
-		TilesManager.Columns = columns;
-	}
-
+	
+	
 	public static Tile GetRandomTile(Random random)
 	{
 		var tileFound = false;
@@ -48,6 +42,13 @@ public static class TilesManager
 			return tile;
 		}
 		return null;
+	}
+
+	public static void CreateTiles(List<Tile> tiles,int rows, int columns)
+	{
+		Tiles = tiles;
+		Rows = rows;
+		Columns = columns;
 	}
 }
 

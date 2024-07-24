@@ -1,9 +1,11 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 [UpdateInGroup(typeof(TransformSystemGroup))]
+[UpdateAfter(typeof(OrientationSystem))]
+
 partial struct MoveSystem : ISystem
 {
 	public void OnCreate(ref SystemState state) { }
@@ -13,20 +15,25 @@ partial struct MoveSystem : ISystem
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
 	{
-		new PlayerMoveJob().Schedule();
+		new MoveJob{Time = SystemAPI.Time.DeltaTime}.Schedule();
 	}
 
-	public partial struct PlayerMoveJob : IJobEntity
+	public partial struct MoveJob : IJobEntity
 	{
-		private void Execute(ref LocalTransform  transform,ref ActionComponent actionComponent)
+		public float Time;
+		private void Execute(ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref MoveComponent moveComponent)
 		{
-			if (actionComponent.Action == Actions.Move)
-			{
-				transform = transform.Translate(Vector3.forward * 1f);
-				actionComponent.Action = Actions.None;
-			}
+			if(moveComponent.MoveFinished)
+				return;
+			
+			var distance = math.distance(transform.Position, moveComponent.TargetPosition);
+			if (distance <= 0.1)
+				moveComponent.MoveFinished = true;
+			
+			var direction = math.normalize(moveComponent.TargetPosition - transform.Position);
+
+			if (!moveComponent.MoveFinished)
+				transform.Position +=  direction * 6 * Time;
 		}
 	}
-
-
 }

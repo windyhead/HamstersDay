@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
 public readonly partial struct HamsterSpawnerAspect :IAspect
 {
     private readonly RefRW<HamsterSpawnerComponent> hamsterSpawner;
+    public Entity PlayerEntity => hamsterSpawner.ValueRW.PlayerPrefab;
     public Entity Entity => hamsterSpawner.ValueRW.HamsterPrefab;
     public int Count => hamsterSpawner.ValueRO.HamstersCount;
+
+    public int2 PlayerPosition => hamsterSpawner.ValueRO.PlayerPosition;
+    public Orientation PlayerOrientation => hamsterSpawner.ValueRO.PlayerOrientation;
+
 }

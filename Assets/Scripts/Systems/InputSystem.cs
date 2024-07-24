@@ -1,11 +1,14 @@
+using System;
 using Unity.Entities;
 using UnityEngine.InputSystem;
 
-[UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
+[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateAfter(typeof(BotSpawnSystem))]
 partial class InputSystem : SystemBase
 {
 	private PlayerInputSettings playerInputSettings;
 	private Entity player;
+	public static bool PlayerInputReceived { get; private set; }
 
 	protected override void OnCreate()
 	{
@@ -13,13 +16,9 @@ partial class InputSystem : SystemBase
 		playerInputSettings = new PlayerInputSettings();
 	}
 
-	protected override  void OnStartRunning()
+	protected override void OnStartRunning()
 	{
-		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		player = SystemAPI.GetSingletonEntity<PlayerComponent>();
-		var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
-		var actionc = new ActionComponent() { Action = Actions.None };
-		ecb.AddComponent<ActionComponent>(player,actionc);
 		playerInputSettings.Enable();
 		playerInputSettings.Player.Move.performed += OnMove;
 		playerInputSettings.Player.TurnLeft.performed += OnTurnLeft;
@@ -28,17 +27,17 @@ partial class InputSystem : SystemBase
 
 	private void OnTurnRight(InputAction.CallbackContext obj)
 	{
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = Actions.TurnRight});
+		InputReceived(Actions.TurnRight);
 	}
 
 	private void OnTurnLeft(InputAction.CallbackContext obj)
 	{
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = Actions.TurnLeft});
+		InputReceived(Actions.TurnLeft);
 	}
 
 	private void OnMove(InputAction.CallbackContext obj)
 	{
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = Actions.Move});
+		InputReceived(Actions.Move);
 	}
 
 	protected override  void OnStopRunning()
@@ -51,5 +50,15 @@ partial class InputSystem : SystemBase
 
 	protected override void OnUpdate()
 	{
+		PlayerInputReceived = false;
+	}
+
+	private void InputReceived(Actions action)
+	{
+		if(!TurnSystem.IsTurnFinished)
+			return;
+		TurnSystem.IsTurnFinished = false;
+		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = action});
+		PlayerInputReceived = true;
 	}
 }
