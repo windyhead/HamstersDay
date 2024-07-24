@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
@@ -7,6 +8,7 @@ using Unity.Transforms;
 
 partial struct TurnSystem : ISystem
 {
+	public static Action<int> OnTurnFinished;
 	public static bool IsTurnFinished = true;
 	public static int CurrentTurn = 1;
 	
@@ -20,7 +22,9 @@ partial struct TurnSystem : ISystem
 
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
-	{
+	{ 
+		if(IsTurnFinished)
+			return;
 		foreach (var moveComponent in SystemAPI.Query<RefRO<MoveComponent>>())
 		{
 			if(!moveComponent.ValueRO.MoveFinished)
@@ -28,6 +32,7 @@ partial struct TurnSystem : ISystem
 		}
 		IsTurnFinished = true;
 		CurrentTurn ++;
+		OnTurnFinished?.Invoke(CurrentTurn);
 	}
 }
 
