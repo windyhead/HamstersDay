@@ -8,13 +8,13 @@ public class TurnCounter : MonoBehaviour
 
     private void Awake()
     {
-        EndTurnSystem.OnTurnFinished += UpdateTurn;
+        TurnSystem.OnTurnFinished += UpdateTurn;
         UpdateTurn(1);
     }
 
     private void OnDestroy()
     {
-        EndTurnSystem.OnTurnFinished -= UpdateTurn;
+        TurnSystem.OnTurnFinished -= UpdateTurn;
     }
 
     private void UpdateTurn(int turn)

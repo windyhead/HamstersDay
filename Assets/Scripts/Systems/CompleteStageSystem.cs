@@ -4,7 +4,7 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
-[UpdateAfter(typeof(EndTurnSystem))]
+[UpdateAfter(typeof(TurnSystem))]
 
 partial struct CompleteStageSystem : ISystem
 {
@@ -18,18 +18,17 @@ partial struct CompleteStageSystem : ISystem
 	{
 		
 	}
-
-	[BurstCompile]
+	
 	public void OnUpdate(ref SystemState state)
 	{
 		if(!GameController.IsTurnFinished)
 			return;
-		new  CheckCompleteJob().Run();
+		new CheckCompleteJob().Schedule();
 	}
 	
 	public partial struct CheckCompleteJob : IJobEntity
 	{
-		private void Execute(ref OrientationComponent orientationComponent, ref PlayerComponent playerComponent)
+		private void Execute(in OrientationComponent orientationComponent, in PlayerComponent playerComponent)
 		{
 			if(TilesManager.isFinalTile(orientationComponent.CurrentTileCoordinates))
 				OnStageComplete?.Invoke();

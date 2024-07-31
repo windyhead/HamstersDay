@@ -7,7 +7,7 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [UpdateAfter(typeof(MoveSystem))]
 
-partial struct EndTurnSystem : ISystem
+partial struct TurnSystem : ISystem
 {
 	public static Action<int> OnTurnFinished;
 	public static int CurrentTurn = 1;
@@ -36,5 +36,10 @@ partial struct EndTurnSystem : ISystem
 		GameController.IsTurnFinished = true;
 		CurrentTurn ++;
 		OnTurnFinished?.Invoke(CurrentTurn);
+	}
+
+	public static void ResetTimer()
+	{
+		CurrentTurn = 1;
 	}
 }

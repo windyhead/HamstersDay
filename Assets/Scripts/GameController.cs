@@ -10,13 +10,14 @@ public class GameController : SingletonBehaviour
 
 	public static bool PlayerInputReceived;
 	
-	public static bool IsTurnFinished;
+	public static bool IsTurnFinished = true;
 
 	public static int RandomNumber { get; private set; }
 
 	private void Awake()
 	{
 		HamsterWorld = World.DefaultGameObjectInjectionWorld;
+		CompleteStageSystem.OnStageComplete += NextStage;
 	}
 	
 	private void Start()
@@ -55,13 +56,21 @@ public class GameController : SingletonBehaviour
 		
 		var lateSystemGroup = HamsterWorld.GetOrCreateSystemManaged<LateSimulationSystemGroup>();
 		
-		var endTurn= HamsterWorld.GetOrCreateSystem(typeof(EndTurnSystem));
+		var endTurn= HamsterWorld.GetOrCreateSystem(typeof(TurnSystem));
 		lateSystemGroup.AddSystemToUpdateList(endTurn);
+		
+		var stageComplete= HamsterWorld.GetOrCreateSystem(typeof(CompleteStageSystem));
+		lateSystemGroup.AddSystemToUpdateList(stageComplete);
 		IsGameStarted = true;
 	}
 
 	public void OnDestroy()
 	{
 		World.DisposeAllWorlds();
+	}
+
+	private void NextStage()
+	{
+		TurnSystem.ResetTimer();
 	}
 }
