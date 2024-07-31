@@ -6,14 +6,15 @@ using Unity.Transforms;
 using Random = Unity.Mathematics.Random;
 
 [BurstCompile]
+[DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = false)]
-[UpdateAfter(typeof(TilesSpawnSystem))]
+[UpdateAfter(typeof(WheelSpawnSystem))]
 partial struct BotSpawnSystem : ISystem
 {
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
-		state.RequireForUpdate<HamsterSpawnerComponent>();
+		state.RequireForUpdate<StageSpawnerComponent>();
 	}
 
 	[BurstCompile]
@@ -26,19 +27,20 @@ partial struct BotSpawnSystem : ISystem
 		state.Enabled = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new BotSpawnSystemJob() { ECB = buffer}.Schedule();
+		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = GameController.RandomNumber}.Schedule();
 	}
 
 	public partial struct BotSpawnSystemJob : IJobEntity
 	{
 		public EntityCommandBuffer ECB;
+		public int RandomNumber; 
 
-		private void Execute(HamsterSpawnerAspect aspect)
+		private void Execute(StageSpawnerAspect aspect)
 		{
 			for (int i = 0; i < aspect.Count; i++)
 			{
 				var newHamster = ECB.Instantiate(aspect.Entity);
-				var random = Random.CreateFromIndex((uint)i);
+				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
 				var randomComponent = new RandomComponent() { Value = random };
 				ECB.AddComponent(newHamster, randomComponent);
 				ECB.AddComponent(newHamster,new BotComponent());
@@ -49,11 +51,12 @@ partial struct BotSpawnSystem : ISystem
 				tile.Enter();
 				var orientation = (Orientation)randomOrientationNumber;
 				var orientationComponent = new OrientationComponent()
-					{ CurrentOrientation = orientation, CurrentTileCoordinates = new int2(tile.RowNumber, tile.ColumnNumber) };
+					{ CurrentOrientation = orientation, CurrentTileCoordinates = tile.Coordinates };
 				ECB.AddComponent(newHamster, orientationComponent);
+				ECB.AddComponent(newHamster, new BotComponent());
 				var rotation = OrientationComponent.GetRotationByOrientation(orientation);
 				ECB.SetComponent(newHamster,
-					new LocalTransform { Position = tile.Center, Scale = 2, Rotation = rotation });
+					new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
 				ECB.AddComponent(newHamster,new MoveComponent{MoveFinished = true});
 			}
 		}

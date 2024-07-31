@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
+[DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 partial struct TilesSpawnSystem : ISystem
 {

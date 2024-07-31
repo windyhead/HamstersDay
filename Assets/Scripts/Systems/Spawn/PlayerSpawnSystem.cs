@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 [BurstCompile]
+[DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(TilesSpawnSystem))]
 partial struct PlayerSpawnSystem : ISystem
@@ -11,7 +12,7 @@ partial struct PlayerSpawnSystem : ISystem
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
-		state.RequireForUpdate<HamsterSpawnerComponent>();
+		state.RequireForUpdate<StageSpawnerComponent>();
 	}
 
 	[BurstCompile]
@@ -34,7 +35,7 @@ partial struct PlayerSpawnSystem : ISystem
 		public EntityCommandBuffer ECB;
 		public PlayerComponent Player;
 
-		private void Execute(HamsterSpawnerAspect aspect)
+		private void Execute(StageSpawnerAspect aspect)
 		{
 			var newHamster = ECB.Instantiate(aspect.PlayerEntity);
 			ECB.AddComponent(newHamster,Player);
@@ -46,12 +47,12 @@ partial struct PlayerSpawnSystem : ISystem
 			var orientationComponent = new OrientationComponent()
 			{
 				CurrentOrientation = aspect.PlayerOrientation,
-				CurrentTileCoordinates = new int2(tile.RowNumber, tile.ColumnNumber)
+				CurrentTileCoordinates = tile.Coordinates
 			};
 			ECB.AddComponent(newHamster, orientationComponent);
 			var rotation = OrientationComponent.GetRotationByOrientation(aspect.PlayerOrientation);
 			ECB.SetComponent(newHamster,
-				new LocalTransform { Position = tile.Center, Scale = 2, Rotation = rotation });
+				new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
 			ECB.AddComponent(newHamster,new MoveComponent{MoveFinished = true});
 		}
 	}

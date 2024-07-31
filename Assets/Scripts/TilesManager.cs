@@ -25,19 +25,13 @@ public static class TilesManager
 		return null;
 	}
 
-	public static void EnterTile(int i, int j)
-	{
-		var Tile = GetTile(i, j);
-		
-	}
-
 	public static Tile GetTile(int row, int column)
 	{
 		foreach (var tile in Tiles)
 		{
-			if(tile.RowNumber!=row)
+			if(tile.Coordinates.x!=row)
 				continue;
-			if(tile.ColumnNumber!=column)
+			if(tile.Coordinates.y!=column)
 				continue;
 			return tile;
 		}
@@ -50,21 +44,22 @@ public static class TilesManager
 		Rows = rows;
 		Columns = columns;
 	}
+
+	public static bool isFinalTile(float2 coordinates) => coordinates.x + 1 == Rows && coordinates.y + 1 == Columns;
+	public static int2 GetFinalTileCoordinates => new int2(Rows-1, Columns-1);
 }
 
 public class Tile
 {
-	public int RowNumber;
-	public int ColumnNumber;
+	public int2 Coordinates;
 	public float3 Center;
-	public bool isEmpty = true;
+	public bool isEmpty { get; private set; } = true;
 	public Entity Entity;
-	private readonly float3 centerOffset = new (0,1,0);
+	private readonly float3 centerOffset = new (0,1.5f,0);
 
 	public Tile(int rowNumber, int columnNumber, float3 transform, Entity entity)
 	{
-		RowNumber = rowNumber;
-		ColumnNumber = columnNumber;
+		Coordinates = new int2(rowNumber,columnNumber);
 		Center = transform + centerOffset;
 		Entity = entity;
 	}

@@ -1,8 +1,10 @@
 using Unity.Burst;
 using Unity.Entities;
 
+[DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-partial struct AiSystem : ISystem
+[UpdateAfter(typeof(InputDetectionSystem))]
+partial struct AISystem : ISystem
 {
 	public void OnCreate(ref SystemState state)
 	{
@@ -15,7 +17,7 @@ partial struct AiSystem : ISystem
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
 	{
-		if(!InputSystem.PlayerInputReceived)
+		if(!GameController.PlayerInputReceived)
 			return;
 		new BotDecisionJob().Run();
 	}

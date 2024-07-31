@@ -1,14 +1,12 @@
-using System;
 using Unity.Entities;
 using UnityEngine.InputSystem;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(BotSpawnSystem))]
-partial class InputSystem : SystemBase
+[DisableAutoCreation]
+[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
+partial class InputDetectionSystem : SystemBase
 {
 	private PlayerInputSettings playerInputSettings;
 	private Entity player;
-	public static bool PlayerInputReceived { get; private set; }
 
 	protected override void OnCreate()
 	{
@@ -47,18 +45,18 @@ partial class InputSystem : SystemBase
 		playerInputSettings.Player.TurnLeft.performed -= OnTurnLeft;
 		playerInputSettings.Player.TurnRight.performed -= OnTurnRight;
 	}
+	
+	private void InputReceived(Actions action)
+	{
+		if(!GameController.IsTurnFinished)
+			return;
+		GameController.IsTurnFinished = false;
+		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = action});
+		GameController.PlayerInputReceived = true;
+	}
 
 	protected override void OnUpdate()
 	{
-		PlayerInputReceived = false;
-	}
-
-	private void InputReceived(Actions action)
-	{
-		if(!TurnSystem.IsTurnFinished)
-			return;
-		TurnSystem.IsTurnFinished = false;
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = action});
-		PlayerInputReceived = true;
+		
 	}
 }

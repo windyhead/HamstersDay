@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+[DisableAutoCreation]
 [UpdateInGroup(typeof(TransformSystemGroup))]
 [UpdateAfter(typeof(OrientationSystem))]
 
@@ -33,7 +34,7 @@ partial struct MoveSystem : ISystem
 			var direction = math.normalize(moveComponent.TargetPosition - transform.Position);
 
 			if (!moveComponent.MoveFinished)
-				transform.Position +=  direction * 6 * Time;
+				transform.Position +=  direction * 12 * Time;
 		}
 	}
 }

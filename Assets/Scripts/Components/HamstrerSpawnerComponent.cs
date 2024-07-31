@@ -1,11 +1,14 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-	public struct HamsterSpawnerComponent : IComponentData
+	public struct StageSpawnerComponent : IComponentData
 	{
-		public Entity PlayerPrefab;
 		public Entity HamsterPrefab;
 		public int HamstersCount;
+		public Entity PlayerPrefab;
 		public int2 PlayerPosition;
 		public Orientation PlayerOrientation;
+		public Entity WheelPrefab;
+		public int2 WheelPosition;
+		public Orientation WheelOrientation;
 	}
