@@ -1,7 +1,6 @@
 using System;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 using Random = Unity.Mathematics.Random;
 
@@ -24,10 +23,9 @@ partial struct BotSpawnSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		state.Enabled = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = GameController.RandomNumber}.Schedule();
+		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = GameController.RandomSeed}.Schedule();
 	}
 
 	public partial struct BotSpawnSystemJob : IJobEntity
@@ -37,7 +35,7 @@ partial struct BotSpawnSystem : ISystem
 
 		private void Execute(StageSpawnerAspect aspect)
 		{
-			for (int i = 0; i < aspect.Count; i++)
+			for (int i = 0; i < GameController.CurrentPopulation ; i++)
 			{
 				var newHamster = ECB.Instantiate(aspect.Entity);
 				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
@@ -47,7 +45,7 @@ partial struct BotSpawnSystem : ISystem
 				var actionComponent = new ActionComponent() { Action = Actions.None };
 				ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
 				var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
-				var tile = TilesManager.GetRandomTile(random);
+				var tile = TilesSpawnSystem.GetRandomTile(random);
 				tile.Enter();
 				var orientation = (Orientation)randomOrientationNumber;
 				var orientationComponent = new OrientationComponent()

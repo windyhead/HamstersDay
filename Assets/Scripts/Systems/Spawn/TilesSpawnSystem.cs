@@ -5,12 +5,18 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 partial struct TilesSpawnSystem : ISystem
 {
+	public static int Rows { get; set; }
+	public static int Columns { get; set; }
+
+	public static List<Tile> Tiles { get; set; }
+	
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
@@ -22,7 +28,6 @@ partial struct TilesSpawnSystem : ISystem
 	
 	public void OnUpdate(ref SystemState state)
 	{
-		state.Enabled = false;
 		var spawnerEntity = SystemAPI.GetSingletonEntity<TilesSpawnerComponent>();
 		var aspect = SystemAPI.GetAspect<TileSpawnerAspect>(spawnerEntity);
 		var ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -41,7 +46,7 @@ partial struct TilesSpawnSystem : ISystem
 				newTiles.Add(new Tile(i,j,position,newTile));
 			}
 		}
-		TilesManager.CreateTiles(newTiles,aspect.Width,aspect.Length);
+		CreateTiles(newTiles,aspect.Width,aspect.Length);
 		ecb.Playback(state.EntityManager);
 	}
 
@@ -49,5 +54,52 @@ partial struct TilesSpawnSystem : ISystem
 	{
 		return new float3(i * (tileSize + 0.1f) - offsetX, 0,
 			j * (tileSize + 0.1f) - offsetZ);
+	}
+
+	private static void CreateTiles(List<Tile> tiles,int rows, int columns)
+	{
+		Tiles = tiles;
+		Rows = rows;
+		Columns = columns;
+	}
+	
+	public static Tile GetRandomTile(Random random)
+	{
+		var tileFound = false;
+		while (!tileFound)
+		{
+			var randomRow = random.NextInt(0, Rows);
+			var randomColumn = random.NextInt(0, Columns);
+			var tile = GetTile(randomRow, randomColumn);
+			if (!tile.isEmpty)
+				continue;
+			return tile;
+		}
+		return null;
+	}
+
+	public static Tile GetTile(int row, int column)
+	{
+		foreach (var tile in Tiles)
+		{
+			if(tile.Coordinates.x!=row)
+				continue;
+			if(tile.Coordinates.y!=column)
+				continue;
+			return tile;
+		}
+		return null;
+	}
+	
+
+	public static bool isFinalTile(float2 coordinates) => coordinates.x + 1 == Rows && coordinates.y + 1 == Columns;
+	public static int2 GetFinalTileCoordinates => new int2(Rows-1, Columns-1);
+
+	public static void ResetTiles()
+	{
+		foreach (var tile in Tiles)
+		{
+			tile.Exit();
+		}
 	}
 }

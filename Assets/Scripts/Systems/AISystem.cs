@@ -19,42 +19,41 @@ partial struct AISystem : ISystem
 	{
 		if(!GameController.PlayerInputReceived)
 			return;
-		new BotDecisionJob().Run();
+		new BotDecisionJob().Schedule();
 	}
 
 	public partial struct BotDecisionJob : IJobEntity
 	{
-		private void Execute(in BotComponent botComponent, ref ActionComponent actionComponent,
-			ref RandomComponent randomComponent, in OrientationComponent orientation)
+		private void Execute(BotAspect aspect)
 		{
-			var random = randomComponent.Value.NextFloat(0, 10);
+			var random = aspect.GetRandomValue(0,10);
 			if (random <= 1)
 			{
-				actionComponent.Action = Actions.None;
+				aspect.SetAction(Actions.None);
 				return;
 			}
-			
-			var canMoveForward = orientation.GetTileAvailable(Actions.Move);
-			var canMoveLeft = orientation.GetTileAvailable(Actions.TurnLeft);
-			var canMoveRight = orientation.GetTileAvailable(Actions.TurnRight);
+
+			var canMoveForward = aspect.CanMoveForward;
+			var canMoveLeft = aspect.CanMoveLeft;
+			var canMoveRight = aspect.CanMoveRight;
 			
 			if (canMoveForward)
 			{
 				if (random <= 8)
-					actionComponent.Action = Actions.Move;
+					aspect.SetAction(Actions.Move);
 			}
 			else if(canMoveLeft && !canMoveRight)
 			{
-				actionComponent.Action = Actions.TurnLeft;
+				aspect.SetAction(Actions.TurnLeft);
 			}
 			else if(canMoveRight && !canMoveLeft)
 			{
-				actionComponent.Action = Actions.TurnRight;
+				aspect.SetAction(Actions.TurnRight);
 			}
 			else if(random <= 9)
-				actionComponent.Action = Actions.TurnLeft;
+				aspect.SetAction(Actions.TurnLeft);
 			else 
-				actionComponent.Action = Actions.TurnRight;
+				aspect.SetAction(Actions.TurnRight);
 		}
 	}
 }

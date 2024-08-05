@@ -15,6 +15,4 @@ public readonly partial struct TileSpawnerAspect : IAspect
 
 	public float3 Transform => tilesSpawner.ValueRO.Transform;
 	public Entity Entity => tilesSpawner.ValueRO.TilePrefab;
-	
-	
 }

@@ -22,11 +22,9 @@ partial struct WheelSpawnSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		state.Enabled = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 		new WheelSpawnSystemJob() {ECB = buffer,}.Run();
-		
 	}
 	
 	public partial struct WheelSpawnSystemJob : IJobEntity
@@ -37,7 +35,8 @@ partial struct WheelSpawnSystem : ISystem
 		{
 			var wheel = ECB.Instantiate(aspect.WheelEntity);
 			ECB.SetName(wheel,"Wheel");
-			var tile = TilesManager.GetTile(aspect.WheelPosition.x, aspect.WheelPosition.y);
+			ECB.AddComponent<WheelComponent>(wheel);
+			var tile = TilesSpawnSystem.GetTile(aspect.WheelPosition.x, aspect.WheelPosition.y);
 			tile.Enter();
 			var orientationComponent = new OrientationComponent()
 			{
@@ -45,7 +44,7 @@ partial struct WheelSpawnSystem : ISystem
 				CurrentTileCoordinates = tile.Coordinates
 			};
 			ECB.AddComponent(wheel, orientationComponent);
-			var rotation = OrientationComponent.GetRotationByOrientation(aspect.PlayerOrientation);
+			var rotation = OrientationComponent.GetRotationByOrientation(aspect.WhellOrientation);
 			ECB.SetComponent(wheel,
 				new LocalTransform { Position = tile.Center + new float3(0,10,0), Scale = 2, Rotation = rotation });
 		}

@@ -1,6 +1,5 @@
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 
 [BurstCompile]
@@ -22,27 +21,23 @@ partial struct PlayerSpawnSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		state.Enabled = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		var playerComponent = new PlayerComponent();
-		new PlayerSpawnSystemJob() {ECB = buffer,Player =  playerComponent}.Run();
-		SystemAPI.SetSingleton(playerComponent);
+		new PlayerSpawnSystemJob() {ECB = buffer}.Run();
 	}
 	
 	public partial struct PlayerSpawnSystemJob : IJobEntity
 	{
 		public EntityCommandBuffer ECB;
-		public PlayerComponent Player;
 
 		private void Execute(StageSpawnerAspect aspect)
 		{
-			var newHamster = ECB.Instantiate(aspect.PlayerEntity);
-			ECB.AddComponent(newHamster,Player);
-			ECB.SetName(newHamster,"PLAYER");
+			var newHamster = ECB.Instantiate( aspect.PlayerEntity);
+			ECB.SetName(newHamster,"Player");
+			ECB.AddComponent<PlayerComponent>(newHamster);
 			var actionComponent = new ActionComponent() { Action = Actions.None };
 			ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
-			var tile = TilesManager.GetTile(aspect.PlayerPosition.x, aspect.PlayerPosition.y);
+			var tile = TilesSpawnSystem.GetTile(aspect.PlayerPosition.x, aspect.PlayerPosition.y);
 			tile.Enter();
 			var orientationComponent = new OrientationComponent()
 			{

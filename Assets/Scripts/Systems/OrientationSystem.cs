@@ -62,12 +62,12 @@ partial struct OrientationSystem : ISystem
 						     if(!isPlayer)
 						        return;
 						     
-						     if(!TilesManager.isFinalTile(newTile.Coordinates))
+						     if(!TilesSpawnSystem.isFinalTile(newTile.Coordinates))
 							     return;
 						     
 					    }
 					    
-    					var oldTile = TilesManager.GetTile(orientationComponent.CurrentTileCoordinates.x,
+    					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,
     						orientationComponent.CurrentTileCoordinates.y);
     					oldTile.Exit();
     

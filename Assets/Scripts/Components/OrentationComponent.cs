@@ -61,7 +61,7 @@ public struct OrientationComponent : IComponentData
 		switch (CurrentOrientation)
 		{
 			case Orientation.Up:
-				if (CurrentTileCoordinates.y == TilesManager.Columns)
+				if (CurrentTileCoordinates.y == TilesSpawnSystem.Columns)
 					return null;
 				tileCoordinates.y = CurrentTileCoordinates.y + 1;
 				break;
@@ -71,7 +71,7 @@ public struct OrientationComponent : IComponentData
 				tileCoordinates.x = CurrentTileCoordinates.x - 1;
 				break;
 			case Orientation.Right:
-				if (CurrentTileCoordinates.x == TilesManager.Rows)
+				if (CurrentTileCoordinates.x == TilesSpawnSystem.Rows)
 					return null;
 				tileCoordinates.x = CurrentTileCoordinates.x + 1;
 				break;
@@ -81,7 +81,7 @@ public struct OrientationComponent : IComponentData
 				tileCoordinates.y = CurrentTileCoordinates.y - 1;
 				break;
 		}
-		var forwardTile = TilesManager.GetTile(tileCoordinates.x, tileCoordinates.y);
+		var forwardTile = TilesSpawnSystem.GetTile(tileCoordinates.x, tileCoordinates.y);
 		return forwardTile;
 	}
 	
@@ -103,18 +103,18 @@ public struct OrientationComponent : IComponentData
 				break;
 				
 			case Orientation.Right:
-				if (CurrentTileCoordinates.y == TilesManager.Columns)
+				if (CurrentTileCoordinates.y == TilesSpawnSystem.Columns)
 					return null;
 				tile.y = CurrentTileCoordinates.y + 1;
 				break;
 			
 			case Orientation.Down:
-				if (CurrentTileCoordinates.x == TilesManager.Rows)
+				if (CurrentTileCoordinates.x == TilesSpawnSystem.Rows)
 					return null;
 				tile.x = CurrentTileCoordinates.x + 1;
 				break;
 		}
-		var leftTile = TilesManager.GetTile(tile.x, tile.y);
+		var leftTile = TilesSpawnSystem.GetTile(tile.x, tile.y);
 		return leftTile;
 	}
 	
@@ -124,13 +124,13 @@ public struct OrientationComponent : IComponentData
 		switch (CurrentOrientation)
 		{
 			case Orientation.Up:
-				if (CurrentTileCoordinates.x == TilesManager.Rows)
+				if (CurrentTileCoordinates.x == TilesSpawnSystem.Rows)
 					return null;
 				tile.x = CurrentTileCoordinates.x + 1;
 				break;
 			
 			case Orientation.Left:
-				if (CurrentTileCoordinates.y == TilesManager.Columns)
+				if (CurrentTileCoordinates.y == TilesSpawnSystem.Columns)
 					return null;
 				tile.y = CurrentTileCoordinates.y + 1;
 				break;
@@ -147,7 +147,7 @@ public struct OrientationComponent : IComponentData
 				tile.x = CurrentTileCoordinates.x - 1;
 				break;
 		}
-		var rightTile = TilesManager.GetTile(tile.x, tile.y);
+		var rightTile = TilesSpawnSystem.GetTile(tile.x, tile.y);
 		return rightTile;
 	}
 }

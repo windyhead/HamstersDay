@@ -8,8 +8,7 @@ public readonly partial struct StageSpawnerAspect :IAspect
     
     public Entity WheelEntity => hamsterSpawner.ValueRW.WheelPrefab;
     public Entity Entity => hamsterSpawner.ValueRW.HamsterPrefab;
-    public int Count => hamsterSpawner.ValueRO.HamstersCount;
-
+    
     public int2 PlayerPosition => hamsterSpawner.ValueRO.PlayerPosition;
     
     public Orientation PlayerOrientation => hamsterSpawner.ValueRO.PlayerOrientation;

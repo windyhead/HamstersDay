@@ -9,9 +9,11 @@ using Unity.Entities;
 partial struct CompleteStageSystem : ISystem
 {
 	public static Action OnStageComplete;
+	private static bool stageComplete;
 	
 	public void OnCreate(ref SystemState state)
 	{
+		state.RequireForUpdate<PlayerComponent>();
 	}
 
 	public void OnDestroy(ref SystemState state)
@@ -21,8 +23,16 @@ partial struct CompleteStageSystem : ISystem
 	
 	public void OnUpdate(ref SystemState state)
 	{
+		if (stageComplete)
+		{
+			state.Enabled = false;
+			ResetStage();
+			OnStageComplete?.Invoke();
+		}
+		
 		if(!GameController.IsTurnFinished)
 			return;
+		
 		new CheckCompleteJob().Schedule();
 	}
 	
@@ -30,9 +40,13 @@ partial struct CompleteStageSystem : ISystem
 	{
 		private void Execute(in OrientationComponent orientationComponent, in PlayerComponent playerComponent)
 		{
-			if(TilesManager.isFinalTile(orientationComponent.CurrentTileCoordinates))
-				OnStageComplete?.Invoke();
-					
+			if (TilesSpawnSystem.isFinalTile(orientationComponent.CurrentTileCoordinates))
+				stageComplete = true;
 		}
+	}
+
+	public static void ResetStage()
+	{
+		stageComplete = false;
 	}
 }

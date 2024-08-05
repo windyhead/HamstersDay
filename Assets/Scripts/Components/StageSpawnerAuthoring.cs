@@ -8,7 +8,9 @@ public class StageSpawnerAuthoring : MonoBehaviour
 	public GameObject HamsterPrefab;
 	public GameObject WheelPrefab;
 	public int Count;
+	public int2 PlayerPosition;
 	public Orientation PlayerOrientation;
+	public int2 WheelPosition;
 	public Orientation WheelOrientation;
 }
 
@@ -21,10 +23,10 @@ class HamsterSpawnerBaker : Baker<StageSpawnerAuthoring>
 			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
 			HamstersCount = authoring.Count,
 			PlayerPrefab = GetEntity(authoring.PlayerPrefab),
-			PlayerPosition = new int2(0,0),
+			PlayerPosition = authoring.PlayerPosition,
 			PlayerOrientation = authoring.PlayerOrientation,
 			WheelPrefab = GetEntity(authoring.WheelPrefab),
-			WheelPosition = TilesManager.GetFinalTileCoordinates,
+			WheelPosition = authoring.WheelPosition,
 			WheelOrientation = authoring.WheelOrientation
 		});
 	}

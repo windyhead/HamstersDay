@@ -191,9 +191,15 @@ MonoBehaviour:
     type: 3}
   WheelPrefab: {fileID: 5968063767119423112, guid: f3a57c5796d540f4fbe800b120695527,
     type: 3}
-  Count: 20
+  Count: 10
+  PlayerPosition:
+    x: 0
+    y: 0
   PlayerOrientation: 0
-  WheelOrientation: 0
+  WheelPosition:
+    x: 9
+    y: 9
+  WheelOrientation: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
