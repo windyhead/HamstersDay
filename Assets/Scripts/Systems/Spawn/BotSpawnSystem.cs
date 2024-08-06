@@ -7,7 +7,7 @@ using Random = Unity.Mathematics.Random;
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = false)]
-[UpdateAfter(typeof(WheelSpawnSystem))]
+[UpdateAfter(typeof(HouseSpawnSystem))]
 partial struct BotSpawnSystem : ISystem
 {
 	[BurstCompile]
@@ -32,12 +32,12 @@ partial struct BotSpawnSystem : ISystem
 	{
 		public EntityCommandBuffer ECB;
 		public int RandomNumber; 
-
+	
 		private void Execute(StageSpawnerAspect aspect)
 		{
-			for (int i = 0; i < GameController.CurrentPopulation ; i++)
+			for (int i = 0; i < PopulationSystem.Population ; i++)
 			{
-				var newHamster = ECB.Instantiate(aspect.Entity);
+				var newHamster = ECB.Instantiate(aspect.BotEntity);
 				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
 				var randomComponent = new RandomComponent() { Value = random };
 				ECB.AddComponent(newHamster, randomComponent);

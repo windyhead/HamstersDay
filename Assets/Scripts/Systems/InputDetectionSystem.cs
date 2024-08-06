@@ -16,7 +16,11 @@ partial class InputDetectionSystem : SystemBase
 
 	protected override void OnStartRunning()
 	{
-		SetPlayer();
+		player = SystemAPI.GetSingletonEntity<PlayerComponent>();
+		playerInputSettings.Enable();
+		playerInputSettings.Player.Move.performed += OnMove;
+		playerInputSettings.Player.TurnLeft.performed += OnTurnLeft;
+		playerInputSettings.Player.TurnRight.performed += OnTurnRight;
 	}
 
 	private void OnTurnRight(InputAction.CallbackContext obj)
@@ -54,14 +58,5 @@ partial class InputDetectionSystem : SystemBase
 	protected override void OnUpdate()
 	{
 		
-	}
-
-	private void SetPlayer()
-	{
-		player = SystemAPI.GetSingletonEntity<PlayerComponent>();
-		playerInputSettings.Enable();
-		playerInputSettings.Player.Move.performed += OnMove;
-		playerInputSettings.Player.TurnLeft.performed += OnTurnLeft;
-		playerInputSettings.Player.TurnRight.performed += OnTurnRight;
 	}
 }

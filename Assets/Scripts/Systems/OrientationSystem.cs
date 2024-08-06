@@ -5,7 +5,7 @@ using Unity.Transforms;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(AISystem))]
+[UpdateAfter(typeof(BotDecisionSystem))]
 partial struct OrientationSystem : ISystem
 {
 	public void OnCreate(ref SystemState state)
@@ -28,7 +28,7 @@ partial struct OrientationSystem : ISystem
 		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
 			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,in PlayerComponent playerComponent)
 		{
-			NewMethod(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:true);
+			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:true);
 		}
 	}
 	
@@ -37,11 +37,11 @@ partial struct OrientationSystem : ISystem
 		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
 			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,in BotComponent botComponent)
 		{
-			NewMethod(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:false);
+			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:false);
 		}
 	}
 	
-	private static void NewMethod(ref LocalTransform transform, ref ActionComponent actionComponent,
+	private static void SetOrientation(ref LocalTransform transform, ref ActionComponent actionComponent,
     			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,bool isPlayer)
     		{
     			if (actionComponent.Action == Actions.None)
@@ -56,16 +56,9 @@ partial struct OrientationSystem : ISystem
     
     					if (newTile == null)
     						return;
-
-					    if (!newTile.isEmpty)
-					    {
-						     if(!isPlayer)
-						        return;
-						     
-						     if(!TilesSpawnSystem.isFinalTile(newTile.Coordinates))
-							     return;
-						     
-					    }
+					    
+					    if(!OrientationComponent.CanMove(newTile,isPlayer))
+						    return;
 					    
     					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,
     						orientationComponent.CurrentTileCoordinates.y);
@@ -100,6 +93,6 @@ partial struct OrientationSystem : ISystem
     					orientationComponent.CurrentOrientation = newOrientation;
     					break;
     				}
-    			}
-    		}
+    			} 
+		    }
 }

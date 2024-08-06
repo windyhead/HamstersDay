@@ -71,7 +71,9 @@ partial struct TilesSpawnSystem : ISystem
 			var randomRow = random.NextInt(0, Rows);
 			var randomColumn = random.NextInt(0, Columns);
 			var tile = GetTile(randomRow, randomColumn);
-			if (!tile.isEmpty)
+			if (!tile.IsEmpty)
+				continue;
+			if(tile.IsFinal)
 				continue;
 			return tile;
 		}
@@ -90,10 +92,7 @@ partial struct TilesSpawnSystem : ISystem
 		}
 		return null;
 	}
-	
-
 	public static bool isFinalTile(float2 coordinates) => coordinates.x + 1 == Rows && coordinates.y + 1 == Columns;
-	public static int2 GetFinalTileCoordinates => new int2(Rows-1, Columns-1);
 
 	public static void ResetTiles()
 	{

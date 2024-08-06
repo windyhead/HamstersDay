@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameController : SingletonBehaviour
@@ -13,16 +14,13 @@ public class GameController : SingletonBehaviour
 	public static Action<int> OnPopulationChanged;
 	
 	public static World HamsterWorld { get; private set; }
-	public static bool IsGameStarted { get; private set; }
 
 	public static bool PlayerInputReceived;
 	
 	public static bool IsTurnFinished = true;
 
-	public static int CurrentStage = 0;
-
-	public static int CurrentPopulation = 0;
-
+	private static int CurrentStage = 1;
+	
 	public static int RandomSeed { get; private set; }
 
 	public int StartingPopulation;
@@ -46,15 +44,17 @@ public class GameController : SingletonBehaviour
 
 	private IEnumerator StartGame()
 	{
-		yield return new WaitForEndOfFrame();
+		SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
+		yield return new WaitForSeconds(1);
+		CurrentStage = 1;
+		PopulationSystem.SetStartingPopulation(StartingPopulation);
 		SetStage();
-		SetPopulation();
 		SetSystems();
+		TurnSystem.ResetTimer();
 		CompleteStageSystem.ResetStage();
 		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
 		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
 		state.Enabled = true;
-		IsGameStarted = true;
 	}
 	
 	private static void SetStage()
@@ -67,13 +67,13 @@ public class GameController : SingletonBehaviour
 		var playerSpawn = HamsterWorld.GetOrCreateSystem(typeof(PlayerSpawnSystem));
 		playerSpawn.Update(HamsterWorld.Unmanaged);
 		
-		var wheelSpawn = HamsterWorld.GetOrCreateSystem(typeof(WheelSpawnSystem));
+		var wheelSpawn = HamsterWorld.GetOrCreateSystem(typeof(HouseSpawnSystem));
 		wheelSpawn.Update(HamsterWorld.Unmanaged);
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);
 		OnStageChanged?.Invoke(CurrentStage);
-		OnPopulationChanged.Invoke(CurrentPopulation);
+		OnPopulationChanged.Invoke(PopulationSystem.Population);
 	}
 
 	private static void SetSystems()
@@ -83,7 +83,7 @@ public class GameController : SingletonBehaviour
 		var inputSystem = HamsterWorld.GetOrCreateSystem(typeof(InputDetectionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(inputSystem);
 		
-		var aiSystem = HamsterWorld.GetOrCreateSystem(typeof(AISystem));
+		var aiSystem = HamsterWorld.GetOrCreateSystem(typeof(BotDecisionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(aiSystem);
 		
 		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(OrientationSystem));
@@ -99,6 +99,9 @@ public class GameController : SingletonBehaviour
 		var endTurn= HamsterWorld.GetOrCreateSystem(typeof(TurnSystem));
 		lateSystemGroup.AddSystemToUpdateList(endTurn);
 		
+		var populaton= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
+		lateSystemGroup.AddSystemToUpdateList(populaton);
+		
 		var stageComplete= HamsterWorld.GetOrCreateSystem(typeof(CompleteStageSystem));
 		lateSystemGroup.AddSystemToUpdateList(stageComplete);
 	}
@@ -106,8 +109,6 @@ public class GameController : SingletonBehaviour
 	private void NextStage()
 	{
 		CurrentStage ++;
-		SetPopulation();
-		TurnSystem.ResetTimer();
 		TilesSpawnSystem.ResetTiles();
 		
 		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
@@ -126,13 +127,8 @@ public class GameController : SingletonBehaviour
 		 ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
 		 state.Enabled = true;
 		 
+		 TurnSystem.ResetTimer();
 		 OnStageChanged?.Invoke(CurrentStage);
-		 OnPopulationChanged?.Invoke(CurrentPopulation);
-		 
-	}
-
-	private void SetPopulation()
-	{
-		CurrentPopulation = StartingPopulation + (CurrentStage-1) * 2;
+		 OnPopulationChanged?.Invoke(PopulationSystem.Population);
 	}
 }

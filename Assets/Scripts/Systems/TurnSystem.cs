@@ -1,7 +1,5 @@
 using System;
-using Unity.Burst;
 using Unity.Entities;
-using Unity.Transforms;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
@@ -10,7 +8,7 @@ using Unity.Transforms;
 partial struct TurnSystem : ISystem
 {
 	public static Action<int> OnTurnFinished;
-	public static int CurrentTurn = 1;
+	private static int CurrentTurn = 1;
 	
 	public void OnCreate(ref SystemState state)
 	{
@@ -19,8 +17,7 @@ partial struct TurnSystem : ISystem
 	public void OnDestroy(ref SystemState state)
 	{
 	}
-
-	[BurstCompile]
+	
 	public void OnUpdate(ref SystemState state)
 	{
 		if (GameController.PlayerInputReceived)
@@ -41,5 +38,6 @@ partial struct TurnSystem : ISystem
 	public static void ResetTimer()
 	{
 		CurrentTurn = 1;
+		OnTurnFinished?.Invoke(CurrentTurn);
 	}
 }

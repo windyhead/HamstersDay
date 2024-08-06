@@ -5,16 +5,15 @@ public readonly partial struct StageSpawnerAspect :IAspect
 {
     private readonly RefRW<StageSpawnerComponent> hamsterSpawner;
     public Entity PlayerEntity => hamsterSpawner.ValueRW.PlayerPrefab;
-    
-    public Entity WheelEntity => hamsterSpawner.ValueRW.WheelPrefab;
-    public Entity Entity => hamsterSpawner.ValueRW.HamsterPrefab;
+    public Entity BotEntity => hamsterSpawner.ValueRW.HamsterPrefab;
+    public Entity HouseEntity => hamsterSpawner.ValueRW.HousePrefab;
     
     public int2 PlayerPosition => hamsterSpawner.ValueRO.PlayerPosition;
-    
+
     public Orientation PlayerOrientation => hamsterSpawner.ValueRO.PlayerOrientation;
-    
-    public int2 WheelPosition => hamsterSpawner.ValueRO.WheelPosition;
-    
-    public Orientation WhellOrientation => hamsterSpawner.ValueRO.WheelOrientation;
+
+    public int2 HousePosition => hamsterSpawner.ValueRO.HousePosition;
+
+    public Orientation HouseOrientation => hamsterSpawner.ValueRO.HouseOrientation;
 
 }

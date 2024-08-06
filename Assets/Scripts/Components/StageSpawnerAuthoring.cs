@@ -6,28 +6,26 @@ public class StageSpawnerAuthoring : MonoBehaviour
 {
 	public GameObject PlayerPrefab;
 	public GameObject HamsterPrefab;
-	public GameObject WheelPrefab;
-	public int Count;
+	public GameObject HousePrefab;
 	public int2 PlayerPosition;
 	public Orientation PlayerOrientation;
-	public int2 WheelPosition;
-	public Orientation WheelOrientation;
+	public int2 HousePosition;
+	public Orientation HouseOrientation;
 }
 
-class HamsterSpawnerBaker : Baker<StageSpawnerAuthoring>
+class StageSpawnerBaker : Baker<StageSpawnerAuthoring>
 {
 	public override void Bake(StageSpawnerAuthoring authoring)
 	{
 		AddComponent(new StageSpawnerComponent
 		{
-			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
-			HamstersCount = authoring.Count,
 			PlayerPrefab = GetEntity(authoring.PlayerPrefab),
+			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
+			HousePrefab = GetEntity(authoring.HousePrefab),
 			PlayerPosition = authoring.PlayerPosition,
 			PlayerOrientation = authoring.PlayerOrientation,
-			WheelPrefab = GetEntity(authoring.WheelPrefab),
-			WheelPosition = authoring.WheelPosition,
-			WheelOrientation = authoring.WheelOrientation
+			HousePosition = authoring.HousePosition,
+			HouseOrientation = authoring.HouseOrientation
 		});
 	}
 }

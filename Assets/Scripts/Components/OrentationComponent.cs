@@ -1,6 +1,7 @@
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Orientation
@@ -50,9 +51,16 @@ public struct OrientationComponent : IComponentData
 		}
 		if (tile == null) 
 			return false;
-		if (!tile.isEmpty)
-			return false;
-		return true;
+
+		return CanMove(tile, false);
+	}
+	
+	public static bool CanMove(Tile tile,bool isPlayer)
+	{
+		if (isPlayer && tile.IsFinal)
+			return true;
+		
+		return tile.IsEmpty && !tile.IsFinal;
 	}
 
 	public Tile GetForwardTile()

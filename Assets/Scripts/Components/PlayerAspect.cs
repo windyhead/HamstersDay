@@ -33,10 +33,5 @@ public readonly partial struct PlayerAspect : IAspect
 	{
 		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);
 	}
-
-	Orientation GetOrientation => orientationComponent.ValueRW.CurrentOrientation; 
-
-	public bool CanMoveForward => orientationComponent.ValueRW.GetTileAvailable(Actions.Move);
-	public bool CanMoveLeft  =>orientationComponent.ValueRW.GetTileAvailable(Actions.TurnLeft);
-	public bool CanMoveRight =>orientationComponent.ValueRW.GetTileAvailable(Actions.TurnRight);
+	
 }
