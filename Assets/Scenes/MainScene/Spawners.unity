@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fa9a4e08ac3eca42b464ae20c865f54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 2943141955409483336, guid: ea53559e716483c4dbdd2e93dbe10bb0,
+  PlayerPrefab: {fileID: 2943141955409483336, guid: e1dd596e8d723e240bbc9c652b4b7d64,
     type: 3}
   HamsterPrefab: {fileID: 2943141955409483336, guid: fcb935549004f284cadc796a8b2b0d57,
     type: 3}
