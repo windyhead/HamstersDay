@@ -123,6 +123,34 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Application"",
+            ""id"": ""c37f21a6-1047-4888-a269-af0ba619415c"",
+            ""actions"": [
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""81f42f9a-6534-4252-a621-95dddd00fbd0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""bb849fb9-b7a4-4192-80db-5e97d33f3c48"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -132,6 +160,9 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_TurnLeft = m_Player.FindAction("TurnLeft", throwIfNotFound: true);
         m_Player_TurnRight = m_Player.FindAction("TurnRight", throwIfNotFound: true);
+        // Application
+        m_Application = asset.FindActionMap("Application", throwIfNotFound: true);
+        m_Application_Quit = m_Application.FindAction("Quit", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,10 +282,60 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Application
+    private readonly InputActionMap m_Application;
+    private List<IApplicationActions> m_ApplicationActionsCallbackInterfaces = new List<IApplicationActions>();
+    private readonly InputAction m_Application_Quit;
+    public struct ApplicationActions
+    {
+        private @PlayerInputSettings m_Wrapper;
+        public ApplicationActions(@PlayerInputSettings wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Quit => m_Wrapper.m_Application_Quit;
+        public InputActionMap Get() { return m_Wrapper.m_Application; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ApplicationActions set) { return set.Get(); }
+        public void AddCallbacks(IApplicationActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ApplicationActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ApplicationActionsCallbackInterfaces.Add(instance);
+            @Quit.started += instance.OnQuit;
+            @Quit.performed += instance.OnQuit;
+            @Quit.canceled += instance.OnQuit;
+        }
+
+        private void UnregisterCallbacks(IApplicationActions instance)
+        {
+            @Quit.started -= instance.OnQuit;
+            @Quit.performed -= instance.OnQuit;
+            @Quit.canceled -= instance.OnQuit;
+        }
+
+        public void RemoveCallbacks(IApplicationActions instance)
+        {
+            if (m_Wrapper.m_ApplicationActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IApplicationActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ApplicationActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ApplicationActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public ApplicationActions @Application => new ApplicationActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnTurnLeft(InputAction.CallbackContext context);
         void OnTurnRight(InputAction.CallbackContext context);
+    }
+    public interface IApplicationActions
+    {
+        void OnQuit(InputAction.CallbackContext context);
     }
 }

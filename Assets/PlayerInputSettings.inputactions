@@ -101,6 +101,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Application",
+            "id": "c37f21a6-1047-4888-a269-af0ba619415c",
+            "actions": [
+                {
+                    "name": "Quit",
+                    "type": "Button",
+                    "id": "81f42f9a-6534-4252-a621-95dddd00fbd0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bb849fb9-b7a4-4192-80db-5e97d33f3c48",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -4,7 +4,9 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameController : SingletonBehaviour
@@ -12,9 +14,11 @@ public class GameController : SingletonBehaviour
 	public static Action<int> OnStageChanged;
 	
 	public static Action<int> OnPopulationChanged;
-	
-	public static World HamsterWorld { get; private set; }
 
+	[SerializeField] private Button startButton;
+
+	[SerializeField] private GameObject startGamePanel;
+	
 	public static bool PlayerInputReceived;
 	
 	public static bool IsTurnFinished = true;
@@ -24,28 +28,37 @@ public class GameController : SingletonBehaviour
 	public static int RandomSeed { get; private set; }
 
 	public int StartingPopulation;
+	
+	private static World HamsterWorld;
+
+	public static PlayerInputSettings PlayerInputSettings { get; private set;}
 
 	private void Awake()
 	{
 		HamsterWorld = World.DefaultGameObjectInjectionWorld;
+		startButton.onClick.AddListener(StartGame);
 		CompleteStageSystem.OnStageComplete += NextStage;
+		PlayerInputSettings = new PlayerInputSettings();
+		PlayerInputSettings.Application.Quit.performed += QuitGame;
 	}
 	
-	private void Start()
+	private void StartGame()
 	{
-		StartCoroutine(StartGame());
+		StartCoroutine(SetUpGame());
 	}
 
 	private void OnDestroy()
 	{
+		startButton.onClick.RemoveAllListeners();
 		CompleteStageSystem.OnStageComplete -= NextStage;
 		World.DisposeAllWorlds();
 	}
 
-	private IEnumerator StartGame()
+	private IEnumerator SetUpGame()
 	{
 		SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
 		yield return new WaitForSeconds(1);
+		startGamePanel.SetActive(false);
 		CurrentStage = 1;
 		PopulationSystem.SetStartingPopulation(StartingPopulation);
 		SetStage();
@@ -56,7 +69,17 @@ public class GameController : SingletonBehaviour
 		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
 		state.Enabled = true;
 	}
-	
+
+	private void QuitGame(InputAction.CallbackContext callbackContext)
+	{
+#if UNITY_EDITOR
+		
+		UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+	}
+
 	private static void SetStage()
 	{
 		RandomSeed = Random.Range(1, 101);

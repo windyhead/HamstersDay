@@ -11,7 +11,7 @@ partial class InputDetectionSystem : SystemBase
 	protected override void OnCreate()
 	{
 		RequireForUpdate<PlayerComponent>();
-		playerInputSettings = new PlayerInputSettings();
+		playerInputSettings = GameController.PlayerInputSettings;
 	}
 
 	protected override void OnStartRunning()
