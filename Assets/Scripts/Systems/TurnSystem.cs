@@ -29,7 +29,15 @@ partial struct TurnSystem : ISystem
 		{
 			if(!moveComponent.ValueRO.MoveFinished)
 				return;
+			
 		}
+		
+		foreach (var rComponent in SystemAPI.Query<RefRO<RotationComponent>>())
+		{
+			if(!rComponent.ValueRO.RotationFinished)
+				return;
+		}
+		
 		GameController.IsTurnFinished = true;
 		CurrentTurn ++;
 		OnTurnFinished?.Invoke(CurrentTurn);

@@ -8,6 +8,8 @@ public readonly partial struct PlayerAspect : IAspect
 	private readonly RefRW<ActionComponent> actionComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
 	private readonly RefRW<LocalTransform> transformComponent;
+	private readonly RefRW<MoveComponent> moveComponent;
+	private readonly RefRW<RotationComponent> rotationComponent;
 	
 	public void SetAction(Actions action)
 	{

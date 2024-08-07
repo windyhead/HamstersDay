@@ -6,6 +6,8 @@ public readonly partial struct BotAspect : IAspect
 	private readonly RefRW<ActionComponent> actionComponent;
 	private readonly RefRW<RandomComponent> randomComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
+	private readonly RefRW<MoveComponent> moveComponent;
+	private readonly RefRW<RotationComponent> rotationComponent;
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
 

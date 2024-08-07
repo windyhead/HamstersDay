@@ -26,23 +26,23 @@ partial struct OrientationSystem : ISystem
 	public partial struct PlayerOrientationJob : IJobEntity
 	{
 		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,in PlayerComponent playerComponent)
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,ref RotationComponent rotationComponent, in PlayerComponent playerComponent)
 		{
-			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:true);
+			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent, isPlayer:true);
 		}
 	}
 	
 	public partial struct BotOrientationJob : IJobEntity
 	{
 		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,in BotComponent botComponent)
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent, in BotComponent botComponent)
 		{
-			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent,isPlayer:false);
+			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref  rotationComponent, isPlayer:false);
 		}
 	}
 	
 	private static void SetOrientation(ref LocalTransform transform, ref ActionComponent actionComponent,
-    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,bool isPlayer)
+    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent,bool isPlayer)
     		{
     			if (actionComponent.Action == Actions.None)
     				return;
@@ -77,8 +77,9 @@ partial struct OrientationSystem : ISystem
     					if (orientationComponent.CurrentOrientation != Orientation.Right)
     						newOrientation = orientationComponent.CurrentOrientation + 1;
     					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-    					transform.Rotation = newRotation;
+					    rotationComponent.TargetRotation = newRotation;
     					orientationComponent.CurrentOrientation = newOrientation;
+					    rotationComponent.RotationFinished = false;
     					break;
     				}
     
@@ -89,8 +90,9 @@ partial struct OrientationSystem : ISystem
     					if (orientationComponent.CurrentOrientation != Orientation.Up)
     						newOrientation = orientationComponent.CurrentOrientation - 1;
     					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-    					transform.Rotation = newRotation;
+					    rotationComponent.TargetRotation = newRotation;
     					orientationComponent.CurrentOrientation = newOrientation;
+					    rotationComponent.RotationFinished = false;
     					break;
     				}
     			} 

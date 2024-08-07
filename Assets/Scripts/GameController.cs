@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -116,6 +117,9 @@ public class GameController : SingletonBehaviour
 		
 		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));
 		transformSystemGroup.AddSystemToUpdateList(moveSystem);
+		
+		var rotationSystem = HamsterWorld.GetOrCreateSystem(typeof(RotationSystem));
+		transformSystemGroup.AddSystemToUpdateList(rotationSystem);
 		
 		var lateSystemGroup = HamsterWorld.GetOrCreateSystemManaged<LateSimulationSystemGroup>();
 		
