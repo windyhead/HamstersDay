@@ -57,7 +57,7 @@ partial struct OrientationSystem : ISystem
     					if (newTile == null)
     						return;
 					    
-					    if(!OrientationComponent.CanMove(newTile,isPlayer))
+					    if(!OrientationComponent.CanMove(newTile))
 						    return;
 					    
     					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,

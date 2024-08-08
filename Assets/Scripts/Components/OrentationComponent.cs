@@ -52,15 +52,12 @@ public struct OrientationComponent : IComponentData
 		if (tile == null) 
 			return false;
 
-		return CanMove(tile, false);
+		return CanMove(tile);
 	}
 	
-	public static bool CanMove(Tile tile,bool isPlayer)
+	public static bool CanMove(Tile tile)
 	{
-		if (isPlayer && tile.IsFinal)
-			return true;
-		
-		return tile.IsEmpty && !tile.IsFinal;
+		return tile.IsEmpty || tile.IsFinal;
 	}
 
 	public Tile GetForwardTile()

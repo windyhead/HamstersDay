@@ -15,7 +15,7 @@ partial struct TilesSpawnSystem : ISystem
 	public static int Rows { get; set; }
 	public static int Columns { get; set; }
 
-	public static List<Tile> Tiles { get; set; }
+	private static List<Tile> Tiles { get; set; }
 	
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)

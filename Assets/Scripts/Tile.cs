@@ -15,8 +15,8 @@ public class Tile
 		Coordinates = new int2(rowNumber,columnNumber);
 		Center = transform + centerOffset;
 		Entity = entity;
-		IsFinal = Coordinates.x + 1 == TilesSpawnSystem.Rows &&
-		          Coordinates.y + 1 == TilesSpawnSystem.Columns;
+		IsFinal = rowNumber + 1 == TilesSpawnSystem.Rows &&
+		          columnNumber + 1 == TilesSpawnSystem.Columns;
 	}
 
 	public void Enter()

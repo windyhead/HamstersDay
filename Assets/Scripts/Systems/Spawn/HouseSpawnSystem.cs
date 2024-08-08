@@ -24,7 +24,7 @@ partial struct HouseSpawnSystem : ISystem
 	{
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new HouseSpawnSystemJob() {ECB = buffer,}.Run();
+		new HouseSpawnSystemJob(){ECB = buffer,}.Run();
 	}
 	
 	public partial struct HouseSpawnSystemJob : IJobEntity

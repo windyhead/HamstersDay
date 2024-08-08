@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -52,6 +51,7 @@ public class GameController : SingletonBehaviour
 	{
 		startButton.onClick.RemoveAllListeners();
 		CompleteStageSystem.OnStageComplete -= NextStage;
+		PlayerInputSettings.Application.Quit.performed -= QuitGame;
 		World.DisposeAllWorlds();
 	}
 
@@ -60,15 +60,9 @@ public class GameController : SingletonBehaviour
 		SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
 		yield return new WaitForSeconds(1);
 		startGamePanel.SetActive(false);
-		CurrentStage = 1;
 		PopulationSystem.SetStartingPopulation(StartingPopulation);
 		SetStage();
 		SetSystems();
-		TurnSystem.ResetTimer();
-		CompleteStageSystem.ResetStage();
-		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
-		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
-		state.Enabled = true;
 	}
 
 	private void QuitGame(InputAction.CallbackContext callbackContext)
@@ -84,6 +78,7 @@ public class GameController : SingletonBehaviour
 	private static void SetStage()
 	{
 		RandomSeed = Random.Range(1, 101);
+		CurrentStage = 1;
 		
 		var tileSpawn = HamsterWorld.GetOrCreateSystem(typeof(TilesSpawnSystem));
 		tileSpawn.Update(HamsterWorld.Unmanaged);
@@ -113,6 +108,9 @@ public class GameController : SingletonBehaviour
 		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(OrientationSystem));
 		simulationSystemGroup.AddSystemToUpdateList(orientationSystem);
 		
+		var destroy= HamsterWorld.GetOrCreateSystem(typeof(BotDestroySystem));
+		simulationSystemGroup.AddSystemToUpdateList(destroy);
+		
 		var transformSystemGroup = HamsterWorld.GetOrCreateSystemManaged<TransformSystemGroup>();
 		
 		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));
@@ -125,12 +123,18 @@ public class GameController : SingletonBehaviour
 		
 		var endTurn= HamsterWorld.GetOrCreateSystem(typeof(TurnSystem));
 		lateSystemGroup.AddSystemToUpdateList(endTurn);
+		TurnSystem.ResetTimer();
 		
-		var populaton= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
-		lateSystemGroup.AddSystemToUpdateList(populaton);
+		var population= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
+		lateSystemGroup.AddSystemToUpdateList(population);
+		
 		
 		var stageComplete= HamsterWorld.GetOrCreateSystem(typeof(CompleteStageSystem));
 		lateSystemGroup.AddSystemToUpdateList(stageComplete);
+		
+		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(stageComplete);
+		CompleteStageSystem.ResetStage();
+		state.Enabled = true;
 	}
 
 	private void NextStage()
