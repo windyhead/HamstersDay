@@ -7,7 +7,7 @@ using Random = Unity.Mathematics.Random;
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = false)]
-[UpdateAfter(typeof(HouseSpawnSystem))]
+[UpdateAfter(typeof(StageSpawnSystem))]
 partial struct BotSpawnSystem : ISystem
 {
 	[BurstCompile]

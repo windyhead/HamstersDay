@@ -3,17 +3,21 @@ using Unity.Mathematics;
 
 public readonly partial struct StageSpawnerAspect :IAspect
 {
-    private readonly RefRW<StageSpawnerComponent> hamsterSpawner;
-    public Entity PlayerEntity => hamsterSpawner.ValueRW.PlayerPrefab;
-    public Entity BotEntity => hamsterSpawner.ValueRW.HamsterPrefab;
-    public Entity HouseEntity => hamsterSpawner.ValueRW.HousePrefab;
+    private readonly RefRW<StageSpawnerComponent> stageSpawner;
+    public Entity PlayerEntity => stageSpawner.ValueRW.PlayerPrefab;
+    public Entity BotEntity => stageSpawner.ValueRW.HamsterPrefab;
+    public Entity HouseEntity => stageSpawner.ValueRW.HousePrefab;
     
-    public int2 PlayerPosition => hamsterSpawner.ValueRO.PlayerPosition;
+    public Entity StoneEntity => stageSpawner.ValueRW.StonePrefab;
+    
+    public int2 PlayerPosition => stageSpawner.ValueRO.PlayerPosition;
 
-    public Orientation PlayerOrientation => hamsterSpawner.ValueRO.PlayerOrientation;
+    public Orientation PlayerOrientation => stageSpawner.ValueRO.PlayerOrientation;
 
-    public int2 HousePosition => hamsterSpawner.ValueRO.HousePosition;
+    public int2 HousePosition => stageSpawner.ValueRO.HousePosition;
 
-    public Orientation HouseOrientation => hamsterSpawner.ValueRO.HouseOrientation;
+    public Orientation HouseOrientation => stageSpawner.ValueRO.HouseOrientation;
+
+    public int StoneCount => stageSpawner.ValueRO.StoneCount;
 
 }

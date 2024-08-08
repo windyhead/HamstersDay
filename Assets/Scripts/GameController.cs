@@ -86,7 +86,7 @@ public class GameController : SingletonBehaviour
 		var playerSpawn = HamsterWorld.GetOrCreateSystem(typeof(PlayerSpawnSystem));
 		playerSpawn.Update(HamsterWorld.Unmanaged);
 		
-		var wheelSpawn = HamsterWorld.GetOrCreateSystem(typeof(HouseSpawnSystem));
+		var wheelSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
 		wheelSpawn.Update(HamsterWorld.Unmanaged);
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));

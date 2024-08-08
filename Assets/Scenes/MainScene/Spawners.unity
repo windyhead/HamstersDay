@@ -222,6 +222,8 @@ MonoBehaviour:
     type: 3}
   HousePrefab: {fileID: 5968063767119423112, guid: f5b08780a98c8234eb97a51e3ed5f470,
     type: 3}
+  StonePrefab: {fileID: 2530229983680823798, guid: c056dd1e10103424c82e80acac9560fd,
+    type: 3}
   PlayerPosition:
     x: 0
     y: 0
@@ -230,6 +232,7 @@ MonoBehaviour:
     x: 8
     y: 8
   HouseOrientation: 0
+  StoneCount: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

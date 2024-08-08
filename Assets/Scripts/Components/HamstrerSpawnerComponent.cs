@@ -6,8 +6,11 @@ using Unity.Mathematics;
 		public Entity HamsterPrefab;
 		public Entity PlayerPrefab;
 		public Entity HousePrefab;
+		public Entity StonePrefab;
 		public int2 PlayerPosition;
 		public Orientation PlayerOrientation;
 		public int2 HousePosition;
 		public Orientation HouseOrientation;
+		
+		public int StoneCount;
 	}
