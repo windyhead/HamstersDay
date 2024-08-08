@@ -10,6 +10,15 @@ public class Tile
 	private readonly float3 centerOffset = new (0,1.5f,0);
 	public bool IsFinal { get; private set; }
 
+	public enum TileType
+	{
+		Plains,
+		Rocks,
+		Grass
+	}
+
+	public TileType Type;
+
 	public Tile(int rowNumber, int columnNumber, float3 transform, Entity entity)
 	{
 		Coordinates = new int2(rowNumber,columnNumber);
@@ -27,5 +36,16 @@ public class Tile
 	public void Exit()
 	{
 		IsEmpty = true;
+	}
+
+	public void SetType(TileType newType)
+	{
+		Type = newType;
+	}
+
+	public void Reset()
+	{
+		if(Type != TileType.Rocks)
+			Exit();
 	}
 }

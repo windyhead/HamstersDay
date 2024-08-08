@@ -63,13 +63,17 @@ partial struct TilesSpawnSystem : ISystem
 		Columns = columns;
 	}
 	
-	public static Tile GetRandomTile(Random random)
+	public static Tile GetRandomTile(Random random,bool forEnvironment = false)
 	{
 		var tileFound = false;
 		while (!tileFound)
 		{
-			var randomRow = random.NextInt(0, Rows);
-			var randomColumn = random.NextInt(0, Columns);
+			var minRow = forEnvironment ? 1 : 0;
+			var minColumn = forEnvironment ? 1 : 0;
+			var maxRow = forEnvironment ? Rows -1 : Rows;
+			var maxColumn = forEnvironment ? Columns -1 : Columns;
+			var randomRow = random.NextInt(minRow, maxRow);
+			var randomColumn = random.NextInt(minColumn, maxColumn);
 			var tile = GetTile(randomRow, randomColumn);
 			if (!tile.IsEmpty)
 				continue;
@@ -98,7 +102,7 @@ partial struct TilesSpawnSystem : ISystem
 	{
 		foreach (var tile in Tiles)
 		{
-			tile.Exit();
+			tile.Reset();
 		}
 	}
 }

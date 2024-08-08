@@ -8,6 +8,7 @@ public class StageSpawnerAuthoring : MonoBehaviour
 	public GameObject HamsterPrefab;
 	public GameObject HousePrefab;
 	public GameObject StonePrefab;
+	public GameObject FlowersPrefab;
 	
 	public int2 PlayerPosition;
 	public Orientation PlayerOrientation;
@@ -15,6 +16,7 @@ public class StageSpawnerAuthoring : MonoBehaviour
 	public Orientation HouseOrientation;
 
 	public int StoneCount;
+	public int FlowersCount;
 }
 
 class StageSpawnerBaker : Baker<StageSpawnerAuthoring>
@@ -27,11 +29,13 @@ class StageSpawnerBaker : Baker<StageSpawnerAuthoring>
 			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
 			HousePrefab = GetEntity(authoring.HousePrefab),
 			StonePrefab = GetEntity(authoring.StonePrefab),
+			FlowersPrefab = GetEntity(authoring.FlowersPrefab),
 			PlayerPosition = authoring.PlayerPosition,
 			PlayerOrientation = authoring.PlayerOrientation,
 			HousePosition = authoring.HousePosition,
 			HouseOrientation = authoring.HouseOrientation,
-			StoneCount = authoring.StoneCount
+			StoneCount = authoring.StoneCount,
+			FlowersCount = authoring.FlowersCount
 		});
 	}
 }

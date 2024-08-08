@@ -224,6 +224,8 @@ MonoBehaviour:
     type: 3}
   StonePrefab: {fileID: 2530229983680823798, guid: c056dd1e10103424c82e80acac9560fd,
     type: 3}
+  FlowersPrefab: {fileID: 2530229983680823798, guid: 0d30e543cf9bb874b960f609dccdf567,
+    type: 3}
   PlayerPosition:
     x: 0
     y: 0
@@ -233,6 +235,7 @@ MonoBehaviour:
     y: 8
   HouseOrientation: 0
   StoneCount: 2
+  FlowersCount: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

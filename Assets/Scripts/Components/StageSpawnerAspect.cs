@@ -10,6 +10,8 @@ public readonly partial struct StageSpawnerAspect :IAspect
     
     public Entity StoneEntity => stageSpawner.ValueRW.StonePrefab;
     
+    public Entity FlowerEntity => stageSpawner.ValueRW.FlowersPrefab;
+    
     public int2 PlayerPosition => stageSpawner.ValueRO.PlayerPosition;
 
     public Orientation PlayerOrientation => stageSpawner.ValueRO.PlayerOrientation;
@@ -19,5 +21,7 @@ public readonly partial struct StageSpawnerAspect :IAspect
     public Orientation HouseOrientation => stageSpawner.ValueRO.HouseOrientation;
 
     public int StoneCount => stageSpawner.ValueRO.StoneCount;
+    
+    public int FlowersCount => stageSpawner.ValueRO.FlowersCount;
 
 }
