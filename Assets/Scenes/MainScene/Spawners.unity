@@ -267,7 +267,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SnakeHeadPrefab: {fileID: 2943141955409483336, guid: 5eb498282ccd88e4a843b0483703c7df,
     type: 3}
-  SnakeElementPrefab: {fileID: 0}
+  SnakeElementPrefab: {fileID: 2943141955409483336, guid: c61fd3e2931b9d2458decd209bc44df9,
+    type: 3}
   SnakeTailPrefab: {fileID: 0}
 --- !u!4 &2082735176
 Transform:

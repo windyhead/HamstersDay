@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
@@ -41,6 +42,9 @@ partial struct SnakeSpawnSystem : ISystem
 			var headComponent = new SnakeHeadComponent();
 			ECB.AddComponent(snakeHead, headComponent);
 			
+			var bodyComponent = new SnakeBodyElementComponent(){Index = 0};
+			ECB.AddComponent(snakeHead, headComponent);
+			
 			var random = Random.CreateFromIndex((uint)(RandomNumber));
 			var randomComponent = new RandomComponent() { Value = random };
 			ECB.AddComponent(snakeHead, randomComponent);
@@ -64,6 +68,27 @@ partial struct SnakeSpawnSystem : ISystem
 			
 			ECB.SetComponent(snakeHead,
 				new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
+
+			for (var i = 1; i < 6; i++)
+			{
+				var snakeBody = ECB.Instantiate(aspect.BodyEntity);
+				ECB.SetName(snakeBody,"SnakeBody_"+ i);
+				bodyComponent = new SnakeBodyElementComponent(){Index = i};
+				ECB.AddComponent(snakeBody, bodyComponent);
+				
+				new ActionComponent() { Action = Actions.None };
+				ECB.AddComponent<ActionComponent>(snakeBody, actionComponent);
+				
+				ECB.AddComponent(snakeBody, orientationComponent);
+
+				ECB.AddComponent(snakeBody, new RotationComponent() { RotationFinished = true });
+			
+				ECB.AddComponent(snakeBody, new MoveComponent { MoveFinished = true });
+			
+				ECB.SetComponent(snakeBody,
+					new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
+			}
+			
 		}
 	}
 }

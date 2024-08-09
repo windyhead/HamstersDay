@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Entities;
 
 [DisableAutoCreation]
@@ -5,6 +6,7 @@ using Unity.Entities;
 [UpdateAfter(typeof(BotDecisionSystem))]
 partial struct SnakeDecisionSystem : ISystem
 {
+	public static List<Actions> SnakeActions = new List <Actions>();
 	public void OnCreate(ref SystemState state)
 	{
 	}
@@ -12,12 +14,29 @@ partial struct SnakeDecisionSystem : ISystem
 	public void OnDestroy(ref SystemState state)
 	{
 	}
-	
+
 	public void OnUpdate(ref SystemState state)
 	{
-		if(!GameController.PlayerInputReceived)
+		if (!GameController.PlayerInputReceived)
 			return;
+		
+		new BodyElementsJob().Schedule();
 		new SnakeDecisionJob().Schedule();
+	}
+	
+	public partial struct BodyElementsJob : IJobEntity
+	{
+		private void Execute(SnakeBodyElementComponent bodyElement,ref ActionComponent actionComponent)
+		{
+			if(bodyElement.Index == 0)
+				return;
+			
+			var previous = bodyElement.Index - 1;
+			if(SnakeActions.Count <= previous)
+				return;
+			var newAction = SnakeActions[previous];
+			actionComponent.Action = newAction;
+		}
 	}
 
 	public partial struct SnakeDecisionJob : IJobEntity
@@ -34,24 +53,31 @@ partial struct SnakeDecisionSystem : ISystem
 			var canMoveForward = aspect.CanMoveForward;
 			var canMoveLeft = aspect.CanMoveLeft;
 			var canMoveRight = aspect.CanMoveRight;
+
+			var newAction = Actions.None;
 			
 			if (canMoveForward)
 			{
 				if (random <= 8)
-					aspect.SetAction(Actions.Move);
+					newAction = Actions.Move;
+				
 			}
 			else if(canMoveLeft && !canMoveRight)
 			{
-				aspect.SetAction(Actions.TurnLeft);
+				newAction = Actions.TurnLeft;
 			}
 			else if(canMoveRight && !canMoveLeft)
 			{
-				aspect.SetAction(Actions.TurnRight);
+				newAction = Actions.TurnRight;
 			}
 			else if(random <= 9)
-				aspect.SetAction(Actions.TurnLeft);
+				newAction = Actions.TurnLeft;
 			else 
-				aspect.SetAction(Actions.TurnRight);
+				newAction = Actions.TurnRight;
+			
+			aspect.SetAction(newAction);
+			SnakeActions.Insert(0,newAction);
 		}
 	}
+	
 }

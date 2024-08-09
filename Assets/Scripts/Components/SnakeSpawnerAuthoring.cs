@@ -15,7 +15,7 @@ class SnakeSpawnerBaker : Baker<SnakeSpawnerAuthoring>
 		AddComponent(new SnakeSpawnerComponent
 		{
 			SnakeHead = GetEntity(authoring.SnakeHeadPrefab),
-			SnakeElement = GetEntity(authoring.SnakeElementPrefab),
+			SnakeBodyElement = GetEntity(authoring.SnakeElementPrefab),
 			SnakeTail = GetEntity(authoring.SnakeElementPrefab)
 		});
 	}
