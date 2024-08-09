@@ -38,6 +38,7 @@ partial struct BotSpawnSystem : ISystem
 			for (int i = 0; i < PopulationSystem.Population ; i++)
 			{
 				var newHamster = ECB.Instantiate(aspect.BotEntity);
+				ECB.SetName(newHamster,"BotHamster_"+ i);
 				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
 				var randomComponent = new RandomComponent() { Value = random };
 				ECB.AddComponent(newHamster, randomComponent);

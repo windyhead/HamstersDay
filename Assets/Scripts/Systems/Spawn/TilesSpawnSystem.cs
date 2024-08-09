@@ -40,6 +40,7 @@ partial struct TilesSpawnSystem : ISystem
 			for (int j = 0; j < aspect.Length; j++)
 			{
 				var newTile = ecb.Instantiate(aspect.Entity);
+				ecb.SetName(newTile,"Tile_"+ i + "_"+ j);
 				var position = GetPosition(i, j, offsetX, offsetZ, aspect.TileSize);
 				ecb.SetComponent(newTile,new LocalTransform{Position = position,
 					Scale = 1, Rotation = Quaternion.identity});
@@ -72,6 +73,45 @@ partial struct TilesSpawnSystem : ISystem
 			var minColumn = forEnvironment ? 1 : 0;
 			var maxRow = forEnvironment ? Rows -1 : Rows;
 			var maxColumn = forEnvironment ? Columns -1 : Columns;
+			var randomRow = random.NextInt(minRow, maxRow);
+			var randomColumn = random.NextInt(minColumn, maxColumn);
+			var tile = GetTile(randomRow, randomColumn);
+			if (!tile.IsEmpty)
+				continue;
+			if(tile.IsFinal)
+				continue;
+			return tile;
+		}
+		return null;
+	}
+	
+	public static Tile GetRandomTileOnBorders(Random random,Orientation orientation)
+	{
+		var minRow = 0;
+		var minColumn = 0;
+		var maxRow = Rows - 1;
+		var maxColumn = Columns - 1;
+
+		switch (orientation)
+		{
+			case Orientation.Up:
+				maxColumn = 0;
+				break;
+			case Orientation.Left:
+				minRow = Rows -1;
+				break;
+			case Orientation.Down:
+				minColumn = Columns -1;
+				break;
+			case Orientation.Right:
+				maxRow = 0;
+				
+				break;
+		}
+		
+		var tileFound = false;
+		while (!tileFound)
+		{
 			var randomRow = random.NextInt(minRow, maxRow);
 			var randomColumn = random.NextInt(minColumn, maxColumn);
 			var tile = GetTile(randomRow, randomColumn);

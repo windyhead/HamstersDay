@@ -5,7 +5,7 @@ using Unity.Transforms;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(BotDecisionSystem))]
+[UpdateAfter(typeof(SnakeDecisionSystem))]
 partial struct OrientationSystem : ISystem
 {
 	public void OnCreate(ref SystemState state)
@@ -19,30 +19,20 @@ partial struct OrientationSystem : ISystem
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
 	{
-		new BotOrientationJob().Schedule();
-		new PlayerOrientationJob().Schedule();
+		new OrientationJob().Schedule();
 	}
 
-	public partial struct PlayerOrientationJob : IJobEntity
+	public partial struct OrientationJob : IJobEntity
 	{
 		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,ref RotationComponent rotationComponent, in PlayerComponent playerComponent)
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,ref RotationComponent rotationComponent)
 		{
-			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent, isPlayer:true);
-		}
-	}
-	
-	public partial struct BotOrientationJob : IJobEntity
-	{
-		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent, in BotComponent botComponent)
-		{
-			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref  rotationComponent, isPlayer:false);
+			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent);
 		}
 	}
 	
 	private static void SetOrientation(ref LocalTransform transform, ref ActionComponent actionComponent,
-    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent,bool isPlayer)
+    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent)
     		{
     			if (actionComponent.Action == Actions.None)
     				return;
