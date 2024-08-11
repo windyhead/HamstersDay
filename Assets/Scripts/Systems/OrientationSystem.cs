@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -19,20 +20,59 @@ partial struct OrientationSystem : ISystem
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
 	{
-		new OrientationJob().Schedule();
+		if (!GameController.PlayerInputReceived)
+			return;
+		new BotOrientationJob().Schedule();
+		new PlayerOrientationJob().Schedule();
+		new SnakeHeadOrientationJob().Schedule();
+		new SnakeBodyOrientationJob().Schedule();
 	}
-
-	public partial struct OrientationJob : IJobEntity
+	
+	public partial struct BotOrientationJob : IJobEntity
 	{
-		private void Execute(ref LocalTransform transform, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,ref RotationComponent rotationComponent)
+		private void Execute (in BotComponent botComponent, ref ActionComponent actionComponent,
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,
+			ref RotationComponent rotationComponent)
 		{
-			SetOrientation(ref transform, ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent);
+			SetOrientation(ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent);
 		}
 	}
 	
-	private static void SetOrientation(ref LocalTransform transform, ref ActionComponent actionComponent,
-    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, ref RotationComponent rotationComponent)
+	public partial struct PlayerOrientationJob : IJobEntity
+	{
+		private void Execute (in PlayerComponent playerComponent, ref ActionComponent actionComponent,
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,
+			ref RotationComponent rotationComponent)
+		{
+			SetOrientation(ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent,
+				isPlayer:true);
+		}
+	}
+	
+	public partial struct SnakeHeadOrientationJob : IJobEntity
+	{
+		private void Execute (in SnakeHeadComponent snakeHeadComponent, ref ActionComponent actionComponent,
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent
+			,ref RotationComponent rotationComponent)
+		{
+			SetOrientation(ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent,
+				isSnake:true);
+		}
+	}
+	
+	public partial struct SnakeBodyOrientationJob : IJobEntity
+	{
+		private void Execute (in SnakeBodyElementComponent snakeBodyElementComponent, ref ActionComponent actionComponent,
+			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,
+			ref RotationComponent rotationComponent)
+		{
+			SetOrientation(ref actionComponent, ref orientationComponent, ref moveComponent, ref rotationComponent);
+		}
+	}
+	
+	private static void SetOrientation( ref ActionComponent actionComponent,
+    			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent, 
+			    ref RotationComponent rotationComponent,bool isPlayer = false, bool isSnake = false)
     		{
     			if (actionComponent.Action == Actions.None)
     				return;
@@ -47,7 +87,7 @@ partial struct OrientationSystem : ISystem
     					if (newTile == null)
     						return;
 					    
-					    if(!OrientationComponent.CanMove(newTile))
+					    if(isPlayer && !OrientationComponent.CanMove(newTile))
 						    return;
 					    
     					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,
@@ -55,6 +95,10 @@ partial struct OrientationSystem : ISystem
     					oldTile.Exit();
     
     					newTile.Enter();
+					    
+					    if(isSnake)
+						   newTile.SnakeEnter();
+					    
     					orientationComponent.CurrentTileCoordinates = new int2(newTile.Coordinates);
     					moveComponent.TargetPosition = newTile.Center;
     					moveComponent.MoveFinished = false;

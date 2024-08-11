@@ -9,7 +9,7 @@ public class Tile
 	public Entity Entity;
 	private readonly float3 centerOffset = new (0,1.5f,0);
 	public bool IsFinal { get; private set; }
-
+	public bool HasSnake { get; private set; }
 	public enum TileType
 	{
 		Plains,
@@ -33,9 +33,16 @@ public class Tile
 		IsEmpty = false;
 	}
 	
+	public void SnakeEnter()
+	{
+		HasSnake = true;
+	}
+	
 	public void Exit()
 	{
 		IsEmpty = true;
+		if (HasSnake)
+			HasSnake = false;
 	}
 
 	public void SetType(TileType newType)

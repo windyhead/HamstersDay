@@ -90,7 +90,7 @@ public struct OrientationComponent : IComponentData
 		return forwardTile;
 	}
 	
-	private Tile GetLeftTile()
+	public Tile GetLeftTile()
 	{
 		var tile = CurrentTileCoordinates;
 		switch (CurrentOrientation)
@@ -123,7 +123,7 @@ public struct OrientationComponent : IComponentData
 		return leftTile;
 	}
 	
-	private Tile GetRightTile()
+	public Tile GetRightTile()
 	{
 		var tile = CurrentTileCoordinates;
 		switch (CurrentOrientation)

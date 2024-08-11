@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 
 [DisableAutoCreation]
@@ -5,6 +6,7 @@ using Unity.Entities;
 [UpdateAfter(typeof(OrientationSystem))]
 public partial struct BotDestroySystem : ISystem
 {
+	public static Action<int> OnBorDestroyed;
 	public void OnCreate(ref SystemState state)
 	{
 	}
@@ -23,10 +25,17 @@ public partial struct BotDestroySystem : ISystem
 
 		foreach (var (aspect, entity) in SystemAPI.Query<BotAspect>().WithEntityAccess())
 		{
+			var currentTile = TilesSpawnSystem.GetTile(aspect.Coordinates.x, aspect.Coordinates.y);
 			if (aspect.OnFinalTile)
 			{
-				TilesSpawnSystem.GetTile(aspect.Coordinates.x, aspect.Coordinates.y).Exit();
+				currentTile.Exit();
 				buffer.DestroyEntity(entity);
+			}
+
+			if (currentTile.HasSnake)
+			{
+				buffer.DestroyEntity(entity);
+				OnBorDestroyed?.Invoke(1);
 			}
 		}
 	}

@@ -17,11 +17,13 @@ partial class PopulationSystem : SystemBase
 	protected override void OnStartRunning()
 	{
 		TurnSystem.OnTurnFinished += IncreasePopulation;
+		BotDestroySystem.OnBorDestroyed += LowerPopulation;
 	}
 	
 	protected override void OnStopRunning()
 	{
 		TurnSystem.OnTurnFinished -= IncreasePopulation;
+		BotDestroySystem.OnBorDestroyed -= LowerPopulation;
 	}
 	
 	private void IncreasePopulation(int i)
@@ -33,13 +35,18 @@ partial class PopulationSystem : SystemBase
 			ResetPopulationCounter();
 		}
 	}
+	
+	private void LowerPopulation(int count)
+	{
+		Population -= count;
+	}
 
 	public static void SetStartingPopulation(int startingPopulation)
 	{
 		Population = startingPopulation;
 	}
 
-	public static void ResetPopulationCounter()
+	private static void ResetPopulationCounter()
 	{
 		populationCounter = 0;
 	}
