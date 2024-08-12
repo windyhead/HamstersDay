@@ -75,11 +75,11 @@ partial struct TilesSpawnSystem : ISystem
 			var maxColumn = forEnvironment ? Columns -1 : Columns;
 			var randomRow = random.NextInt(minRow, maxRow);
 			var randomColumn = random.NextInt(minColumn, maxColumn);
-			var tile = GetTile(randomRow, randomColumn);
-			if (!tile.IsEmpty)
+			var tile = GetTile(randomRow, randomColumn); 
+			
+			if(!tile.CanBeSpawnedOn())
 				continue;
-			if(tile.IsFinal)
-				continue;
+			
 			return tile;
 		}
 		return null;
@@ -115,10 +115,9 @@ partial struct TilesSpawnSystem : ISystem
 			var randomRow = random.NextInt(minRow, maxRow);
 			var randomColumn = random.NextInt(minColumn, maxColumn);
 			var tile = GetTile(randomRow, randomColumn);
-			if (!tile.IsEmpty)
+			if(!tile.CanBeSpawnedOn())
 				continue;
-			if(tile.IsFinal)
-				continue;
+			
 			return tile;
 		}
 		return null;

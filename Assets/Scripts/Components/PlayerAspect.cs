@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -11,12 +12,15 @@ public readonly partial struct PlayerAspect : IAspect
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
 	
+	public Actions GetAction => actionComponent.ValueRW.Action;
 	public void SetAction(Actions action)
 	{
 		actionComponent.ValueRW.Action = action;
 	}
-
-	public void SetOrientation(Orientation orientation,Tile tile)
+	
+	public OrientationComponent OrientationComponent => orientationComponent.ValueRW;
+	
+	public void SetNewOrientation(Orientation orientation,Tile tile)
 	{
 		orientationComponent.ValueRW = new OrientationComponent()
 		{
@@ -26,14 +30,45 @@ public readonly partial struct PlayerAspect : IAspect
 		};
 	}
 	
+	public void SetOrientation(Orientation orientation)
+	{
+		orientationComponent.ValueRW.CurrentOrientation = orientation;
+	}
+	
+	public Orientation GetOrientation => orientationComponent.ValueRW.CurrentOrientation;
+	
+	public void SetCoordinates(int2 coordinates)
+	{
+		orientationComponent.ValueRW.CurrentTileCoordinates = coordinates;
+	}
+
+	public void  SetTargetPosition(float3 target)
+	{
+		moveComponent.ValueRW.TargetPosition = target;
+		moveComponent.ValueRW.MoveFinished = false;
+	}
+	
+	public void  SetTargetRotation(Quaternion target)
+	{
+		rotationComponent.ValueRW.TargetRotation = target;
+		rotationComponent.ValueRW.RotationFinished = false;
+	}
+	
 	public void SetTransform(Tile tile)
 	{
 		transformComponent.ValueRW = new LocalTransform { Position = tile.Center, Scale = 3, Rotation = GetRotation() };
+	}
+	
+	public bool CanMove(Tile tile)
+	{
+		if (tile == null || tile.Creature != Tile.CreatureType.None 
+		                 || tile.Type == Tile.TileType.Rocks)
+			return false;
+		return true;
 	}
 	
 	private Quaternion GetRotation()
 	{
 		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);
 	}
-	
 }

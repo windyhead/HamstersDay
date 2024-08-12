@@ -5,11 +5,9 @@ public class Tile
 {
 	public int2 Coordinates;
 	public float3 Center;
-	public bool IsEmpty { get; private set; } = true;
 	public Entity Entity;
 	private readonly float3 centerOffset = new (0,1.5f,0);
 	public bool IsFinal { get; private set; }
-	public bool HasSnake { get; private set; }
 	public enum TileType
 	{
 		Plains,
@@ -18,6 +16,15 @@ public class Tile
 	}
 
 	public TileType Type;
+	
+	public enum CreatureType
+	{
+		None,
+		Hamster,
+		Snake
+	}
+
+	public CreatureType Creature { get; private set; }
 
 	public Tile(int rowNumber, int columnNumber, float3 transform, Entity entity)
 	{
@@ -28,21 +35,14 @@ public class Tile
 		          columnNumber + 1 == TilesSpawnSystem.Columns;
 	}
 
-	public void Enter()
+	public void Enter(CreatureType creatureType)
 	{
-		IsEmpty = false;
-	}
-	
-	public void SnakeEnter()
-	{
-		HasSnake = true;
+		Creature = creatureType;
 	}
 	
 	public void Exit()
 	{
-		IsEmpty = true;
-		if (HasSnake)
-			HasSnake = false;
+		Creature = CreatureType.None;
 	}
 
 	public void SetType(TileType newType)
@@ -52,7 +52,11 @@ public class Tile
 
 	public void Reset()
 	{
-		if(Type != TileType.Rocks)
-			Exit();
+		Exit();
+	}
+
+	public bool CanBeSpawnedOn()
+	{
+		return Creature == CreatureType.None && Type != TileType.Rocks && !IsFinal;
 	}
 }

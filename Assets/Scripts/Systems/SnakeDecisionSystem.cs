@@ -66,9 +66,9 @@ partial struct SnakeDecisionSystem : ISystem
 			var newAction = Actions.None;
 			var random = aspect.GetRandomValue(0,10);
 			
-			var canMoveForward = aspect.CanMoveForward;
-			var canMoveLeft = aspect.CanMoveLeft;
-			var canMoveRight = aspect.CanMoveRight;
+			var canMoveForward = aspect.CanMoveForward();
+			var canMoveLeft = aspect.CanMoveLeft();
+			var canMoveRight = aspect.CanMoveRight();
 			
 			if (canMoveForward && random <= 9)
 			{

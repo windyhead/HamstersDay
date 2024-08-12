@@ -32,7 +32,7 @@ public partial struct BotDestroySystem : ISystem
 				buffer.DestroyEntity(entity);
 			}
 
-			if (currentTile.HasSnake)
+			if (currentTile.Creature == Tile.CreatureType.Snake)
 			{
 				buffer.DestroyEntity(entity);
 				OnBorDestroyed?.Invoke(1);

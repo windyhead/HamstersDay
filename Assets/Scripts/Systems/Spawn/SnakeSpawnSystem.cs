@@ -52,7 +52,7 @@ partial struct SnakeSpawnSystem : ISystem
 			var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
 			var orientation = (Orientation)randomOrientationNumber;
 			var tile = TilesSpawnSystem.GetRandomTileOnBorders(random, orientation);
-			tile.Enter();
+			tile.Enter(Tile.CreatureType.Snake);
 			
 			var orientationComponent = new OrientationComponent()
 				{ CurrentOrientation = orientation, CurrentTileCoordinates = tile.Coordinates };

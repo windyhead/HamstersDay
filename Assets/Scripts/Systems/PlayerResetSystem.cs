@@ -30,8 +30,8 @@ partial struct PlayerResetSystem : ISystem
 		{
 			aspect.SetAction(Actions.None);
 			var tile = TilesSpawnSystem.GetTile(0, 0);
-			tile.Enter();
-			aspect.SetOrientation(Orientation.Up,tile);
+			tile.Enter(Tile.CreatureType.Hamster);
+			aspect.SetNewOrientation(Orientation.Up,tile);
 			aspect.SetTransform(tile);
 		}
 	}

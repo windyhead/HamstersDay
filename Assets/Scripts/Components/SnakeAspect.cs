@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.Mathematics;
 
 public readonly partial struct SnakeAspect : IAspect
 {
@@ -12,10 +11,17 @@ public readonly partial struct SnakeAspect : IAspect
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
 
+	public Actions GetAction => actionComponent.ValueRW.Action;
 	public void SetAction(Actions action)
 	{
 		actionComponent.ValueRW.Action = action;
 	}
+	
+	public OrientationComponent GetOrientation => orientationComponent.ValueRW;
+	
+	public MoveComponent GetMoveComponent => moveComponent.ValueRW;
+	
+	public RotationComponent GetRotationComponent => rotationComponent.ValueRW;
 
 	public bool HasForwardTarget()
 	{
@@ -35,17 +41,36 @@ public readonly partial struct SnakeAspect : IAspect
 		return HasTarget(tile);
 	}
 
-	public bool CanMoveForward => orientationComponent.ValueRW.GetTileAvailable(Actions.Move);
-	public bool CanMoveLeft => orientationComponent.ValueRW.GetTileAvailable(Actions.TurnLeft);
-	public bool CanMoveRight => orientationComponent.ValueRW.GetTileAvailable(Actions.TurnRight);
-	
-	public bool OnFinalTile => TilesSpawnSystem.isFinalTile(orientationComponent.ValueRO.CurrentTileCoordinates);
-	
-	public int2 Coordinates => orientationComponent.ValueRO.CurrentTileCoordinates;
-	
-	private static bool HasTarget(Tile forwardTile)
+	public bool CanMoveForward()
 	{
-		if (forwardTile == null || forwardTile.IsEmpty || forwardTile.Type != Tile.TileType.Plains)
+		var tile = orientationComponent.ValueRW.GetForwardTile();
+		return CanMove(tile);
+	}
+	
+	public bool CanMoveLeft()
+	{
+		var tile = orientationComponent.ValueRW.GetLeftTile();
+		return CanMove(tile);
+	}
+	
+	public bool CanMoveRight()
+	{
+		var tile = orientationComponent.ValueRW.GetRightTile();
+		return CanMove(tile);
+	}
+	
+	private static bool HasTarget(Tile tile)
+	{
+		if (tile == null || tile.Creature != Tile.CreatureType.Hamster 
+		                 || tile.Type != Tile.TileType.Plains || tile.IsFinal)
+			return false;
+		return true;
+	}
+
+	private static bool CanMove(Tile tile)
+	{
+		if (tile == null || tile.Creature == Tile.CreatureType.Snake 
+		                 || tile.Type == Tile.TileType.Rocks||tile.IsFinal)
 			return false;
 		return true;
 	}

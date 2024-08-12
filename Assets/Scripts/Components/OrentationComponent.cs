@@ -1,7 +1,5 @@
-using System;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Orientation
@@ -35,31 +33,6 @@ public struct OrientationComponent : IComponentData
 		return rotation;
 	}
 	
-	public bool GetTileAvailable(Actions action)
-	{	Tile tile = null;
-		switch (action)
-		{
-			case Actions.Move:
-				tile = GetForwardTile();
-				break;
-			case Actions.TurnLeft:
-				tile = GetLeftTile();
-				break;
-			case Actions.TurnRight:
-				tile = GetRightTile();
-				break;
-		}
-		if (tile == null) 
-			return false;
-
-		return CanMove(tile);
-	}
-	
-	public static bool CanMove(Tile tile)
-	{
-		return tile.IsEmpty || tile.IsFinal;
-	}
-
 	public Tile GetForwardTile()
 	{
 		var tileCoordinates = CurrentTileCoordinates;

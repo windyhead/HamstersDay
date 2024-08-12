@@ -66,7 +66,6 @@ partial struct StageSpawnSystem : ISystem
 				var random = Random.CreateFromIndex((uint)(RandomNumber + i));
 				var tile = TilesSpawnSystem.GetRandomTile(random,true);
 				tile.SetType(Tile.TileType.Rocks);
-				tile.Enter();
 				var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
 				var orientation = (Orientation)randomOrientationNumber;
 				var rotation = OrientationComponent.GetRotationByOrientation(orientation);

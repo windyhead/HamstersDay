@@ -47,7 +47,7 @@ partial struct BotSpawnSystem : ISystem
 				ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
 				var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
 				var tile = TilesSpawnSystem.GetRandomTile(random);
-				tile.Enter();
+				tile.Enter(Tile.CreatureType.Hamster);
 				var orientation = (Orientation)randomOrientationNumber;
 				var orientationComponent = new OrientationComponent()
 					{ CurrentOrientation = orientation, CurrentTileCoordinates = tile.Coordinates };

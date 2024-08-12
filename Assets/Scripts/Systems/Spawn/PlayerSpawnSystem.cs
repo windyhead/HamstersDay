@@ -38,7 +38,7 @@ partial struct PlayerSpawnSystem : ISystem
 			var actionComponent = new ActionComponent() { Action = Actions.None };
 			ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
 			var tile = TilesSpawnSystem.GetTile(aspect.PlayerPosition.x, aspect.PlayerPosition.y);
-			tile.Enter();
+			tile.Enter(Tile.CreatureType.Hamster);
 			var orientationComponent = new OrientationComponent()
 			{
 				CurrentOrientation = aspect.PlayerOrientation,

@@ -31,9 +31,9 @@ partial struct BotDecisionSystem : ISystem
 				return;
 			}
 
-			var canMoveForward = aspect.CanMoveForward;
-			var canMoveLeft = aspect.CanMoveLeft;
-			var canMoveRight = aspect.CanMoveRight;
+			var canMoveForward = aspect.CanMoveForward();
+			var canMoveLeft = aspect.CanMoveLeft();
+			var canMoveRight = aspect.CanMoveRight();
 			
 			if (canMoveForward)
 			{
