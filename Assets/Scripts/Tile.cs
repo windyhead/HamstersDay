@@ -7,7 +7,11 @@ public class Tile
 	public float3 Center;
 	public Entity Entity;
 	private readonly float3 centerOffset = new (0,1.5f,0);
-	public bool IsFinal { get; private set; }
+	
+	public bool IsFinal => 	Coordinates.x + 1 == TilesSpawnSystem.Rows &&
+	                        Coordinates.y + 1 == TilesSpawnSystem.Columns;
+
+	
 	public enum TileType
 	{
 		Plains,
@@ -31,8 +35,6 @@ public class Tile
 		Coordinates = new int2(rowNumber,columnNumber);
 		Center = transform + centerOffset;
 		Entity = entity;
-		IsFinal = rowNumber + 1 == TilesSpawnSystem.Rows &&
-		          columnNumber + 1 == TilesSpawnSystem.Columns;
 	}
 
 	public void Enter(CreatureType creatureType)

@@ -41,34 +41,34 @@ partial struct SnakeDecisionSystem : ISystem
 
 	public partial struct SnakeDecisionJob : IJobEntity
 	{
-		private void Execute(SnakeAspect aspect)
+		private void Execute(SnakeHeadAspect headAspect)
 		{
-			var hasForwardTarget = aspect.HasForwardTarget();
-			var hasLeftTarget = aspect.HasLeftTarget();
-			var hasRightTarget = aspect.HasRightTarget();
+			var hasForwardTarget = headAspect.HasForwardTarget();
+			var hasLeftTarget = headAspect.HasLeftTarget();
+			var hasRightTarget = headAspect.HasRightTarget();
 			
 			if (hasForwardTarget)
 			{
-				SetSnakeAction(aspect, Actions.Move); 
+				SetSnakeAction(headAspect, Actions.Move); 
 				return;
 			}
 			if(hasLeftTarget)
 			{
-				SetSnakeAction(aspect, Actions.TurnLeft); 
+				SetSnakeAction(headAspect, Actions.TurnLeft); 
 				return;
 			}
 			if(hasRightTarget)
 			{
-				SetSnakeAction(aspect, Actions.TurnRight); 
+				SetSnakeAction(headAspect, Actions.TurnRight); 
 				return;
 			}
 			
 			var newAction = Actions.None;
-			var random = aspect.GetRandomValue(0,10);
+			var random = headAspect.GetRandomValue(0,10);
 			
-			var canMoveForward = aspect.CanMoveForward();
-			var canMoveLeft = aspect.CanMoveLeft();
-			var canMoveRight = aspect.CanMoveRight();
+			var canMoveForward = headAspect.CanMoveForward();
+			var canMoveLeft = headAspect.CanMoveLeft();
+			var canMoveRight = headAspect.CanMoveRight();
 			
 			if (canMoveForward && random <= 9)
 			{
@@ -87,12 +87,12 @@ partial struct SnakeDecisionSystem : ISystem
 			else 
 				newAction = Actions.TurnRight;
 			
-			SetSnakeAction(aspect, newAction);
+			SetSnakeAction(headAspect, newAction);
 		}
 
-		private static void SetSnakeAction(SnakeAspect aspect, Actions newAction)
+		private static void SetSnakeAction(SnakeHeadAspect headAspect, Actions newAction)
 		{
-			aspect.SetAction(newAction);
+			headAspect.SetAction(newAction);
 			SnakeActions.Insert(0,newAction);
 		}
 	}

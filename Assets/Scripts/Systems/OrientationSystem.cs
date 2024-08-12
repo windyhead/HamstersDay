@@ -23,7 +23,7 @@ partial struct OrientationSystem : ISystem
 		new BotOrientationJob().Schedule();
 		new PlayerOrientationJob().Schedule();
 		new SnakeHeadOrientationJob().Schedule();
-		//new SnakeBodyOrientationJob().Schedule();
+		new SnakeBodyOrientationJob().Schedule();
 	}
 	
 	public partial struct BotOrientationJob : IJobEntity
@@ -108,7 +108,45 @@ partial struct OrientationSystem : ISystem
 	
 	public partial struct SnakeHeadOrientationJob : IJobEntity
 	{
-		private void Execute(SnakeAspect aspect)
+		private void Execute(SnakeHeadAspect headAspect)
+		{
+			var action = headAspect.GetAction();
+			if (action == Actions.None)
+				return;
+			
+			headAspect.SetAction(Actions.None);
+
+			switch (action)
+			{
+				case Actions.Move:
+				{
+					var newTile = headAspect.GetForwardTile();
+					var oldTile = TilesSpawnSystem.GetTile(headAspect.GetCoordinates().x, 
+						headAspect.GetCoordinates().y);
+					oldTile.Exit();
+					newTile.Enter(Tile.CreatureType.Snake);
+					headAspect.SetCoordinates(newTile.Coordinates);
+					headAspect.SetTargetPosition(newTile.Center);
+					break;
+				}
+				case Actions.TurnLeft:
+				{
+					TurnLeft(headAspect);
+					break;
+				}
+    
+				case Actions.TurnRight:
+				{
+					TurnRight(headAspect);
+					break;
+				}
+			}
+		}
+	}
+	
+	public partial struct SnakeBodyOrientationJob : IJobEntity
+	{
+		private void Execute(SnakeBodyAspect aspect)
 		{
 			var action = aspect.GetAction();
 			if (action == Actions.None)
@@ -144,65 +182,6 @@ partial struct OrientationSystem : ISystem
 		}
 	}
 	
-	public partial struct SnakeBodyOrientationJob : IJobEntity
-	{
-		private void Execute (in SnakeBodyElementComponent snakeBodyElementComponent, ref ActionComponent actionComponent,
-			ref OrientationComponent orientationComponent, ref MoveComponent moveComponent,
-			ref RotationComponent rotationComponent)
-		{
-			
-			if (actionComponent.Action == Actions.None)
-    				return;
-    
-    			switch (actionComponent.Action)
-    			{
-    				case Actions.Move:
-    				{
-    					actionComponent.Action = Actions.None;
-    					var newTile = orientationComponent.GetForwardTile();
-    
-    					if (newTile == null)
-    						return;
-					    
-    					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,
-    						orientationComponent.CurrentTileCoordinates.y);
-    					oldTile.Exit();
-    
-    					newTile.Enter(Tile.CreatureType.Snake);
-    					orientationComponent.CurrentTileCoordinates = new int2(newTile.Coordinates);
-    					moveComponent.TargetPosition = newTile.Center;
-    					moveComponent.MoveFinished = false;
-    					break;
-    				}
-    				case Actions.TurnLeft:
-    				{
-    					actionComponent.Action = Actions.None;
-    					var newOrientation = Orientation.Up;
-    					if (orientationComponent.CurrentOrientation != Orientation.Right)
-    						newOrientation = orientationComponent.CurrentOrientation + 1;
-    					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					    rotationComponent.TargetRotation = newRotation;
-    					orientationComponent.CurrentOrientation = newOrientation;
-					    rotationComponent.RotationFinished = false;
-    					break;
-    				}
-    
-    				case Actions.TurnRight:
-    				{
-    					actionComponent.Action = Actions.None;
-    					var newOrientation = Orientation.Right;
-    					if (orientationComponent.CurrentOrientation != Orientation.Up)
-    						newOrientation = orientationComponent.CurrentOrientation - 1;
-    					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					    rotationComponent.TargetRotation = newRotation;
-    					orientationComponent.CurrentOrientation = newOrientation;
-					    rotationComponent.RotationFinished = false;
-    					break;
-    				}
-    			} 
-		}
-	}
-	
 	private static void TurnRight(ICreature aspect)
 	{
 		var newOrientation = Orientation.Right;
@@ -221,6 +200,5 @@ partial struct OrientationSystem : ISystem
 		var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
 		aspect.SetTargetRotation(newRotation);
 		aspect.SetOrientation(newOrientation);
-		return;
 	}
 }

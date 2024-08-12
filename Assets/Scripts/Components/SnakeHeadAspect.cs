@@ -2,9 +2,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-public readonly partial struct SnakeAspect : IAspect, ICreature
+public readonly partial struct SnakeHeadAspect : IAspect, ICreature
 {
-	private readonly RefRO<SnakeHeadComponent> headComponent;
+	private readonly RefRO<SnakeHeadComponent> snakeHeadComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
 	private readonly RefRW<RandomComponent> randomComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
@@ -112,7 +112,7 @@ public readonly partial struct SnakeAspect : IAspect, ICreature
 	private static bool CanMove(Tile tile)
 	{
 		if (tile == null || tile.Creature == Tile.CreatureType.Snake 
-		                 || tile.Type == Tile.TileType.Rocks||tile.IsFinal)
+		                 || tile.Type == Tile.TileType.Rocks || tile.IsFinal)
 			return false;
 		return true;
 	}
