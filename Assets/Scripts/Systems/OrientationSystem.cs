@@ -23,14 +23,14 @@ partial struct OrientationSystem : ISystem
 		new BotOrientationJob().Schedule();
 		new PlayerOrientationJob().Schedule();
 		new SnakeHeadOrientationJob().Schedule();
-		new SnakeBodyOrientationJob().Schedule();
+		//new SnakeBodyOrientationJob().Schedule();
 	}
 	
 	public partial struct BotOrientationJob : IJobEntity
 	{
 		private void Execute(BotAspect aspect)
 		{
-			var action = aspect.GetAction;
+			var action = aspect.GetAction();
 			if (action == Actions.None)
 				return;
 			
@@ -40,11 +40,10 @@ partial struct OrientationSystem : ISystem
 			{
 				case Actions.Move:
 				{
-					var newTile = aspect.OrientationComponent.GetForwardTile();
-					var oldTile = TilesSpawnSystem.GetTile(aspect.OrientationComponent.CurrentTileCoordinates.x,
-						aspect.OrientationComponent.CurrentTileCoordinates.y);
+					var newTile = aspect.GetForwardTile();
+					var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, 
+						aspect.GetCoordinates().y);
 					oldTile.Exit();
-
 					newTile.Enter(Tile.CreatureType.Hamster);
 					aspect.SetCoordinates(newTile.Coordinates);
 					aspect.SetTargetPosition(newTile.Center);
@@ -52,23 +51,13 @@ partial struct OrientationSystem : ISystem
 				}
 				case Actions.TurnLeft:
 				{
-					var newOrientation = Orientation.Up;
-					if (aspect.GetOrientation != Orientation.Right)
-						newOrientation = aspect.GetOrientation + 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					aspect.SetTargetRotation(newRotation);
-					aspect.SetOrientation(newOrientation);
+					TurnLeft(aspect);
 					break;
 				}
     
 				case Actions.TurnRight:
 				{
-					var newOrientation = Orientation.Right;
-					if (aspect.GetOrientation != Orientation.Up)
-						newOrientation = aspect.GetOrientation - 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					aspect.SetTargetRotation(newRotation);
-					aspect.SetOrientation(newOrientation);
+					TurnRight(aspect);
 					break;
 				}
 			}
@@ -79,7 +68,7 @@ partial struct OrientationSystem : ISystem
 	{
 		private void Execute(PlayerAspect aspect)
 		{
-			var action = aspect.GetAction;
+			var action = aspect.GetAction();
 			if (action == Actions.None)
 				return;
 			
@@ -89,12 +78,12 @@ partial struct OrientationSystem : ISystem
 			{
 				case Actions.Move:
 				{
-					var newTile = aspect.OrientationComponent.GetForwardTile();
+					var newTile = aspect.GetForwardTile();
 					if (!aspect.CanMove(newTile))
 						return;
 
-					var oldTile = TilesSpawnSystem.GetTile(aspect.OrientationComponent.CurrentTileCoordinates.x,
-						aspect.OrientationComponent.CurrentTileCoordinates.y);
+					var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x,
+						aspect.GetCoordinates().y);
 					oldTile.Exit();
 
 					newTile.Enter(Tile.CreatureType.Hamster);
@@ -104,23 +93,13 @@ partial struct OrientationSystem : ISystem
 				}
 				case Actions.TurnLeft:
 				{
-					var newOrientation = Orientation.Up;
-					if (aspect.GetOrientation != Orientation.Right)
-						newOrientation = aspect.GetOrientation + 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					aspect.SetTargetRotation(newRotation);
-					aspect.SetOrientation(newOrientation);
+					TurnLeft(aspect);
 					break;
 				}
     
 				case Actions.TurnRight:
 				{
-					var newOrientation = Orientation.Right;
-					if (aspect.GetOrientation != Orientation.Up)
-						newOrientation = aspect.GetOrientation - 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					aspect.SetTargetRotation(newRotation);
-					aspect.SetOrientation(newOrientation);
+					TurnRight(aspect);
 					break;
 				}
 			}
@@ -129,14 +108,11 @@ partial struct OrientationSystem : ISystem
 	
 	public partial struct SnakeHeadOrientationJob : IJobEntity
 	{
-		private void Execute (SnakeAspect aspect)
+		private void Execute(SnakeAspect aspect)
 		{
-			var action = aspect.GetAction;
+			var action = aspect.GetAction();
 			if (action == Actions.None)
 				return;
-			var orientationComponent = aspect.GetOrientation;
-			var moveComponent = aspect.GetMoveComponent;
-			var rotationComponent = aspect.GetRotationComponent;
 			
 			aspect.SetAction(Actions.None);
 
@@ -144,39 +120,24 @@ partial struct OrientationSystem : ISystem
 			{
 				case Actions.Move:
 				{
-					var newTile = orientationComponent.GetForwardTile();
-					var oldTile = TilesSpawnSystem.GetTile(orientationComponent.CurrentTileCoordinates.x,
-						orientationComponent.CurrentTileCoordinates.y);
+					var newTile = aspect.GetForwardTile();
+					var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, 
+						aspect.GetCoordinates().y);
 					oldTile.Exit();
-
 					newTile.Enter(Tile.CreatureType.Snake);
-
-					orientationComponent.CurrentTileCoordinates = new int2(newTile.Coordinates);
-					moveComponent.TargetPosition = newTile.Center;
-					moveComponent.MoveFinished = false;
+					aspect.SetCoordinates(newTile.Coordinates);
+					aspect.SetTargetPosition(newTile.Center);
 					break;
 				}
 				case Actions.TurnLeft:
 				{
-					var newOrientation = Orientation.Up;
-					if (orientationComponent.CurrentOrientation != Orientation.Right)
-						newOrientation = orientationComponent.CurrentOrientation + 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					rotationComponent.TargetRotation = newRotation;
-					orientationComponent.CurrentOrientation = newOrientation;
-					rotationComponent.RotationFinished = false;
+					TurnLeft(aspect);
 					break;
 				}
     
 				case Actions.TurnRight:
 				{
-					var newOrientation = Orientation.Right;
-					if (orientationComponent.CurrentOrientation != Orientation.Up)
-						newOrientation = orientationComponent.CurrentOrientation - 1;
-					var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-					rotationComponent.TargetRotation = newRotation;
-					orientationComponent.CurrentOrientation = newOrientation;
-					rotationComponent.RotationFinished = false;
+					TurnRight(aspect);
 					break;
 				}
 			}
@@ -242,25 +203,24 @@ partial struct OrientationSystem : ISystem
 		}
 	}
 	
-	private static void TurnRight(OrientationComponent orientationComponent,RotationComponent rotationComponent)
+	private static void TurnRight(ICreature aspect)
 	{
 		var newOrientation = Orientation.Right;
-		if (orientationComponent.CurrentOrientation != Orientation.Up)
-			newOrientation = orientationComponent.CurrentOrientation - 1;
+		if (aspect.GetCurrentOrientation() != Orientation.Up)
+			newOrientation = aspect.GetCurrentOrientation() - 1;
 		var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-		rotationComponent.TargetRotation = newRotation;
-		orientationComponent.CurrentOrientation = newOrientation;
-		rotationComponent.RotationFinished = false;
+		aspect.SetTargetRotation(newRotation);
+		aspect.SetOrientation(newOrientation);
 	}
 
-	private static void TurnLeft(OrientationComponent orientationComponent,RotationComponent rotationComponent)
+	private static void TurnLeft(ICreature aspect)
 	{
 		var newOrientation = Orientation.Up;
-		if (orientationComponent.CurrentOrientation != Orientation.Right)
-			newOrientation = orientationComponent.CurrentOrientation + 1;
+		if (aspect.GetCurrentOrientation() != Orientation.Right)
+			newOrientation = aspect.GetCurrentOrientation() + 1;
 		var newRotation = OrientationComponent.GetRotationByOrientation(newOrientation);
-		rotationComponent.TargetRotation = newRotation;
-		orientationComponent.CurrentOrientation = newOrientation;
-		rotationComponent.RotationFinished = false;
+		aspect.SetTargetRotation(newRotation);
+		aspect.SetOrientation(newOrientation);
+		return;
 	}
 }

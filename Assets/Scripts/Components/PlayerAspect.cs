@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-public readonly partial struct PlayerAspect : IAspect
+public readonly partial struct PlayerAspect : IAspect, ICreature
 {
 	private readonly RefRO<PlayerComponent> playerComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
@@ -11,13 +11,27 @@ public readonly partial struct PlayerAspect : IAspect
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
+
+	public Actions GetAction()
+	{
+		return actionComponent.ValueRW.Action;
+	}
 	
-	public Actions GetAction => actionComponent.ValueRW.Action;
 	public void SetAction(Actions action)
 	{
 		actionComponent.ValueRW.Action = action;
 	}
-	
+
+	public Orientation GetCurrentOrientation()
+	{
+		return orientationComponent.ValueRW.CurrentOrientation;
+	}
+
+	public Tile GetForwardTile()
+	{
+		return orientationComponent.ValueRW.GetForwardTile();
+	}
+
 	public OrientationComponent OrientationComponent => orientationComponent.ValueRW;
 	
 	public void SetNewOrientation(Orientation orientation,Tile tile)
@@ -40,6 +54,11 @@ public readonly partial struct PlayerAspect : IAspect
 	public void SetCoordinates(int2 coordinates)
 	{
 		orientationComponent.ValueRW.CurrentTileCoordinates = coordinates;
+	}
+
+	public int2 GetCoordinates()
+	{
+		return orientationComponent.ValueRW.CurrentTileCoordinates;
 	}
 
 	public void  SetTargetPosition(float3 target)

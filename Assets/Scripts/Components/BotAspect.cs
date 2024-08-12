@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-public readonly partial struct BotAspect : IAspect
+public readonly partial struct BotAspect : IAspect, ICreature
 {
 	private readonly RefRO<BotComponent> botComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
@@ -13,24 +13,24 @@ public readonly partial struct BotAspect : IAspect
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
 
-	public Actions GetAction => actionComponent.ValueRW.Action;
+	public Actions GetAction()
+	{
+		return actionComponent.ValueRW.Action;
+	}
+	
 	public void SetAction(Actions action)
 	{
 		actionComponent.ValueRW.Action = action;
 	}
-	
-	public OrientationComponent OrientationComponent => orientationComponent.ValueRW;
-	
-	public Orientation GetOrientation => orientationComponent.ValueRW.CurrentOrientation;
-	
-	public void SetNewOrientation(Orientation orientation,Tile tile)
+
+	public Orientation GetCurrentOrientation()
 	{
-		orientationComponent.ValueRW = new OrientationComponent()
-		{
-			CurrentOrientation = orientation,
-			CurrentTileCoordinates = tile.Coordinates
-			
-		};
+		return orientationComponent.ValueRW.CurrentOrientation;
+	}
+
+	public Tile GetForwardTile()
+	{
+		return orientationComponent.ValueRW.GetForwardTile();
 	}
 	
 	public void SetOrientation(Orientation orientation)
@@ -42,6 +42,12 @@ public readonly partial struct BotAspect : IAspect
 	{
 		orientationComponent.ValueRW.CurrentTileCoordinates = coordinates;
 	}
+	
+	public int2 GetCoordinates()
+	{
+		return orientationComponent.ValueRW.CurrentTileCoordinates;
+	}
+	
 
 	public void  SetTargetPosition(float3 target)
 	{

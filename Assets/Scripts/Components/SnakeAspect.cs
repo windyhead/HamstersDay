@@ -1,6 +1,8 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
 
-public readonly partial struct SnakeAspect : IAspect
+public readonly partial struct SnakeAspect : IAspect, ICreature
 {
 	private readonly RefRO<SnakeHeadComponent> headComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
@@ -10,18 +12,58 @@ public readonly partial struct SnakeAspect : IAspect
 	private readonly RefRW<RotationComponent> rotationComponent;
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
+	
+	public Actions GetAction()
+	{
+		return actionComponent.ValueRW.Action;
+	}
 
-	public Actions GetAction => actionComponent.ValueRW.Action;
 	public void SetAction(Actions action)
 	{
 		actionComponent.ValueRW.Action = action;
 	}
-	
-	public OrientationComponent GetOrientation => orientationComponent.ValueRW;
-	
-	public MoveComponent GetMoveComponent => moveComponent.ValueRW;
-	
-	public RotationComponent GetRotationComponent => rotationComponent.ValueRW;
+
+	public Orientation GetCurrentOrientation()
+	{
+		return orientationComponent.ValueRW.CurrentOrientation;
+	}
+
+	public Tile GetForwardTile()
+	{
+		return orientationComponent.ValueRW.GetForwardTile();
+	}
+
+	bool ICreature.CanMove(Tile tile)
+	{
+		return CanMove(tile);
+	}
+
+	public void SetOrientation(Orientation orientation)
+	{
+		orientationComponent.ValueRW.CurrentOrientation = orientation;
+	}
+
+	public void SetCoordinates(int2 coordinates)
+	{
+		orientationComponent.ValueRW.CurrentTileCoordinates = coordinates;
+	}
+
+	public int2 GetCoordinates()
+	{
+		return orientationComponent.ValueRW.CurrentTileCoordinates;
+	}
+
+	public void  SetTargetPosition(float3 target)
+	{
+		moveComponent.ValueRW.TargetPosition = target;
+		moveComponent.ValueRW.MoveFinished = false;
+	}
+
+	public void  SetTargetRotation(Quaternion target)
+	{
+		rotationComponent.ValueRW.TargetRotation = target;
+		rotationComponent.ValueRW.RotationFinished = false;
+	}
 
 	public bool HasForwardTarget()
 	{
