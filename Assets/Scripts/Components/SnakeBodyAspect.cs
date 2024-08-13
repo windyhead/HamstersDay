@@ -56,12 +56,11 @@ public readonly partial struct SnakeBodyAspect : IAspect, ICreature
 		moveComponent.ValueRW.MoveFinished = false;
 	}
 
-	public void  SetTargetRotation(Quaternion target)
+	public void SetTargetRotation(Quaternion target)
 	{
 		rotationComponent.ValueRW.TargetRotation = target;
 		rotationComponent.ValueRW.RotationFinished = false;
 	}
-	
 	
 	private static bool CanMove(Tile tile)
 	{

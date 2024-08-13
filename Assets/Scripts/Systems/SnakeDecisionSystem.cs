@@ -11,10 +11,17 @@ partial struct SnakeDecisionSystem : ISystem
 	public void OnCreate(ref SystemState state)
 	{
 		SnakeActions = new List <Actions>();
+		GameController.OnSnakeDestroyed += ClearActions;
+	}
+
+	private void ClearActions()
+	{
+		SnakeActions.Clear();
 	}
 
 	public void OnDestroy(ref SystemState state)
 	{
+		GameController.OnSnakeDestroyed -= ClearActions;
 	}
 
 	public void OnUpdate(ref SystemState state)

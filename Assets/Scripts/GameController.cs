@@ -12,45 +12,51 @@ using Random = UnityEngine.Random;
 public class GameController : SingletonBehaviour
 {
 	public static Action<int> OnStageChanged;
-	
 	public static Action<int> OnPopulationChanged;
+	public static Action OnSnakeDestroyed;
 
-	[SerializeField] private Button startButton;
-
+	[SerializeField] private Button startGameButton;
+	[SerializeField] private Button restartButton;
+	[SerializeField] private Button quitButton;
 	[SerializeField] private GameObject startGamePanel;
+	[SerializeField] private GameObject gameOverPanel;
 	
 	public static bool PlayerInputReceived;
-	
 	public static bool IsTurnFinished = true;
+	public static int CurrentStage { get; private set; } = 1;
 
-	private static int CurrentStage = 1;
-	
 	public static int RandomSeed { get; private set; }
-
 	public int StartingPopulation;
-	
 	private static World HamsterWorld;
-
 	public static PlayerInputSettings PlayerInputSettings { get; private set;}
 
 	private void Awake()
 	{
 		HamsterWorld = World.DefaultGameObjectInjectionWorld;
-		startButton.onClick.AddListener(StartGame);
+		startGameButton.onClick.AddListener(StartGame);
+		restartButton.onClick.AddListener(ResetGame);
+		quitButton.onClick.AddListener(QuitGame);
 		CompleteStageSystem.OnStageComplete += NextStage;
+		GameOverSystem.OnGameOver += GameOver;
 		PlayerInputSettings = new PlayerInputSettings();
 		PlayerInputSettings.Application.Quit.performed += QuitGame;
 	}
-	
+
 	private void StartGame()
 	{
 		StartCoroutine(SetUpGame());
 	}
 
+	private void GameOver()
+	{
+		gameOverPanel.SetActive(true);
+	}
+
 	private void OnDestroy()
 	{
-		startButton.onClick.RemoveAllListeners();
+		startGameButton.onClick.RemoveAllListeners();
 		CompleteStageSystem.OnStageComplete -= NextStage;
+		GameOverSystem.OnGameOver -= GameOver;
 		PlayerInputSettings.Application.Quit.performed -= QuitGame;
 		World.DisposeAllWorlds();
 	}
@@ -66,6 +72,11 @@ public class GameController : SingletonBehaviour
 	}
 
 	private void QuitGame(InputAction.CallbackContext callbackContext)
+	{
+		QuitGame();
+	}
+	
+	private void QuitGame()
 	{
 #if UNITY_EDITOR
 		
@@ -92,15 +103,16 @@ public class GameController : SingletonBehaviour
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);
 		
-		var snakeSpawn = HamsterWorld.GetOrCreateSystem(typeof(SnakeSpawnSystem));
-		snakeSpawn.Update(HamsterWorld.Unmanaged);
-		
 		OnStageChanged?.Invoke(CurrentStage);
 		OnPopulationChanged.Invoke(PopulationSystem.Population);
 	}
 
 	private static void SetSystems()
 	{
+		var initializationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<InitializationSystemGroup>();
+		var snakeSpawn = HamsterWorld.GetOrCreateSystem(typeof(SnakeSpawnSystem));
+		initializationSystemGroup.AddSystemToUpdateList(snakeSpawn);
+		
 		var simulationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<SimulationSystemGroup>();
 		
 		var inputSystem = HamsterWorld.GetOrCreateSystem(typeof(InputDetectionSystem));
@@ -132,6 +144,9 @@ public class GameController : SingletonBehaviour
 		lateSystemGroup.AddSystemToUpdateList(endTurn);
 		TurnSystem.ResetTimer();
 		
+		var gameOverSystem = HamsterWorld.GetOrCreateSystem(typeof(GameOverSystem));
+		lateSystemGroup.AddSystemToUpdateList(gameOverSystem);
+		
 		var population= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
 		lateSystemGroup.AddSystemToUpdateList(population);
 		
@@ -146,26 +161,54 @@ public class GameController : SingletonBehaviour
 	private void NextStage()
 	{
 		CurrentStage ++;
+		ResetStage();
+	}
+
+	private void ResetStage()
+	{
 		TilesSpawnSystem.ResetTiles();
 		
-		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
-		var botQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<BotComponent>().Build(HamsterWorld.EntityManager);
-		var entities = botQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		entities.Dispose();
-		
+		DestroyBots();
+		DestroySnake();
+
 		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerResetSystem));
 		playerReset.Update(HamsterWorld.Unmanaged);
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);
 
-		 var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
-		 ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
-		 state.Enabled = true;
+		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
+		ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
+		state.Enabled = true;
 		 
-		 TurnSystem.ResetTimer();
-		 OnStageChanged?.Invoke(CurrentStage);
-		 OnPopulationChanged?.Invoke(PopulationSystem.Population);
+		TurnSystem.ResetTimer();
+		OnStageChanged?.Invoke(CurrentStage);
+		OnPopulationChanged?.Invoke(PopulationSystem.Population);
+	}
+
+	private void DestroyBots()
+	{
+		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
+		var botQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<BotComponent>().Build(HamsterWorld.EntityManager);
+		var entities = botQuery.ToEntityArray(Allocator.TempJob);
+		HamsterWorld.EntityManager.DestroyEntity(entities);
+		entities.Dispose();
+	}
+
+	private void DestroySnake()
+	{
+		var snakeQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<SnakeTag>().Build(HamsterWorld.EntityManager);
+		var entities = snakeQuery.ToEntityArray(Allocator.TempJob);
+		HamsterWorld.EntityManager.DestroyEntity(entities);
+		entities.Dispose();
+		OnSnakeDestroyed?.Invoke();
+	}
+
+	private void ResetGame()
+	{
+		CurrentStage = 1;
+		PopulationSystem.SetStartingPopulation(StartingPopulation);
+		ResetStage();
+		gameOverPanel.SetActive(false);
 	}
 }

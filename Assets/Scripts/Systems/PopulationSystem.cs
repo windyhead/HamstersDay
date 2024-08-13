@@ -2,7 +2,7 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
-[UpdateAfter(typeof(TurnSystem))]
+[UpdateAfter(typeof(GameOverSystem))]
 
 partial class PopulationSystem : SystemBase
 {

@@ -55,7 +55,7 @@ public readonly partial struct PlayerAspect : IAspect, ICreature
 	{
 		orientationComponent.ValueRW.CurrentTileCoordinates = coordinates;
 	}
-
+	
 	public int2 GetCoordinates()
 	{
 		return orientationComponent.ValueRW.CurrentTileCoordinates;

@@ -48,6 +48,7 @@ public readonly partial struct BotAspect : IAspect, ICreature
 		return orientationComponent.ValueRW.CurrentTileCoordinates;
 	}
 	
+
 	public void  SetTargetPosition(float3 target)
 	{
 		moveComponent.ValueRW.TargetPosition = target;
@@ -61,7 +62,6 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	}
 	
 	public bool OnFinalTile => TilesSpawnSystem.isFinalTile(orientationComponent.ValueRO.CurrentTileCoordinates);
-	public int2 Coordinates => orientationComponent.ValueRO.CurrentTileCoordinates;
 	
 	public bool CanMoveForward()
 	{

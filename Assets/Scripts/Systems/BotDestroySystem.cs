@@ -25,7 +25,7 @@ public partial struct BotDestroySystem : ISystem
 
 		foreach (var (aspect, entity) in SystemAPI.Query<BotAspect>().WithEntityAccess())
 		{
-			var currentTile = TilesSpawnSystem.GetTile(aspect.Coordinates.x, aspect.Coordinates.y);
+			var currentTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, aspect.GetCoordinates().y);
 			if (aspect.OnFinalTile)
 			{
 				currentTile.Exit();
