@@ -17,11 +17,11 @@ partial struct SnakeSpawnSystem : ISystem
 		GameController.OnPopulationChanged += DetectSnakeSpawn;
 	}
 
-	private void DetectSnakeSpawn(int population)
+	private void DetectSnakeSpawn()
 	{
-		var random = Random.CreateFromIndex((uint)(GameController.RandomSeed + population));
+		var random = Random.CreateFromIndex((uint)(GameController.RandomSeed + PopulationSystem.Population));
 		var randomNumber = random.NextInt(0, (TilesSpawnSystem.Rows -1) * (TilesSpawnSystem.Columns -1));
-		if (randomNumber <= population)
+		if (randomNumber <= PopulationSystem.Population + 5)
 			spawnSnake = true;
 	}
 

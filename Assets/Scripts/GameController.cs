@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class GameController : SingletonBehaviour
 {
 	public static Action<int> OnStageChanged;
-	public static Action<int> OnPopulationChanged;
+	public static Action OnPopulationChanged;
 	public static Action OnSnakeDestroyed;
 
 	[SerializeField] private Button startGameButton;
@@ -69,6 +69,8 @@ public class GameController : SingletonBehaviour
 		PopulationSystem.SetStartingPopulation(StartingPopulation);
 		SetStage();
 		SetSystems();
+		OnStageChanged?.Invoke(CurrentStage);
+		OnPopulationChanged.Invoke();
 	}
 
 	private void QuitGame(InputAction.CallbackContext callbackContext)
@@ -102,9 +104,6 @@ public class GameController : SingletonBehaviour
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);
-		
-		OnStageChanged?.Invoke(CurrentStage);
-		OnPopulationChanged.Invoke(PopulationSystem.Population);
 	}
 
 	private static void SetSystems()
@@ -160,12 +159,14 @@ public class GameController : SingletonBehaviour
 
 	private void NextStage()
 	{
+		PopulationSystem.ResetPopulationCounter();
 		CurrentStage ++;
 		ResetStage();
 	}
 
 	private void ResetStage()
 	{
+		RandomSeed = Random.Range(1, 101);
 		TilesSpawnSystem.ResetTiles();
 		
 		DestroyBots();
@@ -183,7 +184,7 @@ public class GameController : SingletonBehaviour
 		 
 		TurnSystem.ResetTimer();
 		OnStageChanged?.Invoke(CurrentStage);
-		OnPopulationChanged?.Invoke(PopulationSystem.Population);
+		OnPopulationChanged?.Invoke();
 	}
 
 	private void DestroyBots()

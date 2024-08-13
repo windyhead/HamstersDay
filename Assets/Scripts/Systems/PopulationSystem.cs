@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 
 [DisableAutoCreation]
@@ -6,8 +7,8 @@ using Unity.Entities;
 
 partial class PopulationSystem : SystemBase
 {
+	public static Action<int> OnPopulationChanged;
 	public static int Population { get; private set; } = 1;
-
 	private static int populationCounter = 0;
 
 	public void OnCreate(ref SystemState state)
@@ -29,16 +30,18 @@ partial class PopulationSystem : SystemBase
 	private void IncreasePopulation(int i)
 	{
 		populationCounter ++;
-		if (populationCounter == 10)
+		if (populationCounter == 5)
 		{
 			Population++;
 			ResetPopulationCounter();
+			OnPopulationChanged?.Invoke(1);
 		}
 	}
 	
 	private void LowerPopulation(int count)
 	{
 		Population -= count;
+		OnPopulationChanged?.Invoke(-count);
 	}
 
 	public static void SetStartingPopulation(int startingPopulation)
@@ -46,7 +49,7 @@ partial class PopulationSystem : SystemBase
 		Population = startingPopulation;
 	}
 
-	private static void ResetPopulationCounter()
+	public static void ResetPopulationCounter()
 	{
 		populationCounter = 0;
 	}
