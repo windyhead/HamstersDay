@@ -13,16 +13,17 @@ partial struct OrientationSystem : ISystem
 	public void OnDestroy(ref SystemState state)
 	{
 	}
-
-	[BurstCompile]
+	
 	public void OnUpdate(ref SystemState state)
 	{
 		if (!GameController.PlayerInputReceived)
 			return;
+		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
+		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 		new BotOrientationJob().Schedule();
 		new PlayerOrientationJob().Schedule();
 		new SnakeHeadOrientationJob().Schedule();
-		new SnakeBodyOrientationJob().Schedule();
+		new SnakeBodyOrientationJob{}.Schedule();
 	}
 	
 	public partial struct BotOrientationJob : IJobEntity
@@ -145,6 +146,7 @@ partial struct OrientationSystem : ISystem
 	
 	public partial struct SnakeBodyOrientationJob : IJobEntity
 	{
+		
 		private void Execute(SnakeBodyAspect aspect)
 		{
 			var action = aspect.GetAction();
