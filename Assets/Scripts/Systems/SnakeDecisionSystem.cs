@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -28,41 +27,38 @@ partial struct SnakeDecisionSystem : ISystem
 	{
 		if (!GameController.PlayerInputReceived)
 			return;
-		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
-		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		var EM = state.EntityManager;
-		new BodyElementsJob(){ECB = buffer,EM = EM}.Schedule();
 		new SnakeDecisionJob().Schedule();
+		new BodyElementsJob().Schedule();
 	}
 	
 	public partial struct BodyElementsJob : IJobEntity
 	{
-		public EntityCommandBuffer ECB;
-		public EntityManager EM;
 		private void Execute(SnakeBodyElementComponent bodyElement,
-			ref ActionComponent actionComponent,
-			Entity entity)
+			ref ActionComponent actionComponent)
 		{
-			var childs = EM.GetBuffer<LinkedEntityGroup>(entity);
-			actionComponent.Action = Actions.None;
+			actionComponent.CurrentAction = Actions.None;
+			
+			if (SnakeActions.Count <= bodyElement.Index + 1)
+				return;
+			var newAction = SnakeActions[bodyElement.Index + 1];
+			actionComponent.CurrentAction = newAction;
+			
 			if (SnakeActions.Count <= bodyElement.Index)
 				return;
-			var newAction = SnakeActions[bodyElement.Index];
-			actionComponent.Action = newAction;
-
-			if (newAction == Actions.TurnLeft || newAction == Actions.TurnRight)
-				SetEntityHierarchyEnabled(false, ECB.AsParallelWriter(), 2, childs);
-			else
-				SetEntityHierarchyEnabled(true, ECB.AsParallelWriter(), 2, childs);
-			//Debug.Log(newAction);
+			var previousAction = SnakeActions[bodyElement.Index];
+			actionComponent.PreviousAction = previousAction;
 		}
 	}
-
 	public partial struct SnakeDecisionJob : IJobEntity
 	{
-
 		private void Execute(SnakeHeadAspect headAspect)
 		{
+			if (TurnSystem.CurrentTurn == 1)
+			{
+				SetSnakeAction(headAspect, Actions.Move);
+				return;
+			} 
+			
 			var hasForwardTarget = headAspect.HasForwardTarget();
 			var hasLeftTarget = headAspect.HasLeftTarget();
 			var hasRightTarget = headAspect.HasRightTarget();
@@ -84,7 +80,6 @@ partial struct SnakeDecisionSystem : ISystem
 				SetSnakeAction(headAspect, Actions.TurnRight);
 				return;
 			}
-
 			var newAction = Actions.None;
 			var random = headAspect.GetRandomValue(0, 10);
 
@@ -116,17 +111,6 @@ partial struct SnakeDecisionSystem : ISystem
 		{
 			headAspect.SetAction(newAction);
 			SnakeActions.Insert(0, newAction);
-		}
-	}
-	public static void SetEntityHierarchyEnabled(bool enabled, EntityCommandBuffer.ParallelWriter commandBuffer, int chunkIndex,DynamicBuffer<LinkedEntityGroup> dinamic)
-	{
-		if (enabled)
-		{
-			commandBuffer.RemoveComponent<Disabled>(chunkIndex, dinamic[chunkIndex].Value);
-		}
-		else
-		{
-			commandBuffer.AddComponent<Disabled>(chunkIndex, dinamic[chunkIndex].Value);
 		}
 	}
 }

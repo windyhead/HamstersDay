@@ -3,7 +3,7 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(OrientationSystem))]
+[UpdateAfter(typeof(SnakeElementSystem))]
 public partial struct BotDestroySystem : ISystem
 {
 	public static Action<int> OnBorDestroyed;

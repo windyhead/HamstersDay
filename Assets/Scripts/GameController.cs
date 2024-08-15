@@ -13,7 +13,12 @@ public class GameController : SingletonBehaviour
 {
 	public static Action<int> OnStageChanged;
 	public static Action OnPopulationChanged;
+	public static Action OnGameReset;
+	public static Action OnGameStarted;
 	public static Action OnSnakeDestroyed;
+	
+	public static bool PlayerInputReceived;
+	public static bool IsTurnFinished = true;
 
 	[SerializeField] private Button startGameButton;
 	[SerializeField] private Button restartButton;
@@ -21,10 +26,7 @@ public class GameController : SingletonBehaviour
 	[SerializeField] private GameObject startGamePanel;
 	[SerializeField] private GameObject gameOverPanel;
 	
-	public static bool PlayerInputReceived;
-	public static bool IsTurnFinished = true;
 	public static int CurrentStage { get; private set; } = 1;
-
 	public static int RandomSeed { get; private set; }
 	public int StartingPopulation;
 	private static World HamsterWorld;
@@ -70,7 +72,7 @@ public class GameController : SingletonBehaviour
 		SetStage();
 		SetSystems();
 		OnStageChanged?.Invoke(CurrentStage);
-		OnPopulationChanged.Invoke();
+		OnGameStarted?.Invoke();
 	}
 
 	private void QuitGame(InputAction.CallbackContext callbackContext)
@@ -126,6 +128,9 @@ public class GameController : SingletonBehaviour
 		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(OrientationSystem));
 		simulationSystemGroup.AddSystemToUpdateList(orientationSystem);
 		
+		var snakeElementsSystem = HamsterWorld.GetOrCreateSystem(typeof(SnakeElementSystem));
+		simulationSystemGroup.AddSystemToUpdateList(snakeElementsSystem);
+		
 		var destroy= HamsterWorld.GetOrCreateSystem(typeof(BotDestroySystem));
 		simulationSystemGroup.AddSystemToUpdateList(destroy);
 		
@@ -169,11 +174,16 @@ public class GameController : SingletonBehaviour
 		RandomSeed = Random.Range(1, 101);
 		TilesSpawnSystem.ResetTiles();
 		
+		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
+		DestroyTerrain();
 		DestroyBots();
 		DestroySnake();
-
+		
 		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerResetSystem));
 		playerReset.Update(HamsterWorld.Unmanaged);
+		
+		var terrainSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
+		terrainSpawn.Update(HamsterWorld.Unmanaged);
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);
@@ -181,18 +191,27 @@ public class GameController : SingletonBehaviour
 		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
 		ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
 		state.Enabled = true;
-		 
+		
 		TurnSystem.ResetTimer();
 		OnStageChanged?.Invoke(CurrentStage);
 		OnPopulationChanged?.Invoke();
 	}
+	
+	private void DestroyTerrain()
+	{
+		var terrainQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<TerrainTag>().Build(HamsterWorld.EntityManager);
+		var entities = terrainQuery.ToEntityArray(Allocator.TempJob);
+		HamsterWorld.EntityManager.DestroyEntity(entities);
+		terrainQuery.Dispose();
+		entities.Dispose();
+	}
 
 	private void DestroyBots()
 	{
-		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
 		var botQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<BotComponent>().Build(HamsterWorld.EntityManager);
 		var entities = botQuery.ToEntityArray(Allocator.TempJob);
 		HamsterWorld.EntityManager.DestroyEntity(entities);
+		botQuery.Dispose();
 		entities.Dispose();
 	}
 
@@ -202,6 +221,7 @@ public class GameController : SingletonBehaviour
 		var entities = snakeQuery.ToEntityArray(Allocator.TempJob);
 		HamsterWorld.EntityManager.DestroyEntity(entities);
 		entities.Dispose();
+		snakeQuery.Dispose();
 		OnSnakeDestroyed?.Invoke();
 	}
 
@@ -210,6 +230,9 @@ public class GameController : SingletonBehaviour
 		CurrentStage = 1;
 		PopulationSystem.SetStartingPopulation(StartingPopulation);
 		ResetStage();
+		SnakeSpawnSystem.Reset();
+		GameOverSystem.Reset();
+		OnGameReset?.Invoke();
 		gameOverPanel.SetActive(false);
 	}
 }

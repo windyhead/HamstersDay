@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using UnityEngine.InputSystem;
 
@@ -13,7 +14,6 @@ partial class InputDetectionSystem : SystemBase
 		RequireForUpdate<PlayerComponent>();
 		playerInputSettings = GameController.PlayerInputSettings;
 	}
-
 	protected override void OnStartRunning()
 	{
 		player = SystemAPI.GetSingletonEntity<PlayerComponent>();
@@ -51,7 +51,7 @@ partial class InputDetectionSystem : SystemBase
 		if(!GameController.IsTurnFinished)
 			return;
 		GameController.IsTurnFinished = false;
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){Action = action});
+		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){CurrentAction = action});
 		GameController.PlayerInputReceived = true;
 	}
 

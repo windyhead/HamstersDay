@@ -14,12 +14,12 @@ public readonly partial struct PlayerAspect : IAspect, ICreature
 
 	public Actions GetAction()
 	{
-		return actionComponent.ValueRW.Action;
+		return actionComponent.ValueRW.CurrentAction;
 	}
 	
 	public void SetAction(Actions action)
 	{
-		actionComponent.ValueRW.Action = action;
+		actionComponent.ValueRW.CurrentAction = action;
 	}
 
 	public Orientation GetCurrentOrientation()

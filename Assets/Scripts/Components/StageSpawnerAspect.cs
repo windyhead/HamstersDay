@@ -8,6 +8,8 @@ public readonly partial struct StageSpawnerAspect :IAspect
     public Entity BotEntity => stageSpawner.ValueRW.HamsterPrefab;
     public Entity HouseEntity => stageSpawner.ValueRW.HousePrefab;
     
+    public Entity GateEntity => stageSpawner.ValueRW.CelestialGate;
+    
     public Entity StoneEntity => stageSpawner.ValueRW.StonePrefab;
     
     public Entity FlowerEntity => stageSpawner.ValueRW.FlowersPrefab;

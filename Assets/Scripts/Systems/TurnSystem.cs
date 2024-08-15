@@ -1,5 +1,6 @@
 using System;
 using Unity.Entities;
+using UnityEngine;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
@@ -8,8 +9,10 @@ using Unity.Entities;
 partial struct TurnSystem : ISystem
 {
 	public static Action<int> OnTurnFinished;
-	private static int CurrentTurn = 1;
-	
+
+	public static bool IsTurnFinished { get; private set; }
+	public static int CurrentTurn { get; private set; } = 1;
+
 	public void OnCreate(ref SystemState state)
 	{
 	}
@@ -25,21 +28,24 @@ partial struct TurnSystem : ISystem
 		
 		if(GameController.IsTurnFinished)
 			return;
+		
 		foreach (var moveComponent in SystemAPI.Query<RefRO<MoveComponent>>())
 		{
 			if(!moveComponent.ValueRO.MoveFinished)
 				return;
-			
 		}
+		//Debug.Log("MoveFinished");
 		
 		foreach (var rComponent in SystemAPI.Query<RefRO<RotationComponent>>())
 		{
 			if(!rComponent.ValueRO.RotationFinished)
 				return;
 		}
+		//Debug.Log("RotationFinished");
 		
 		GameController.IsTurnFinished = true;
 		CurrentTurn ++;
+		//Debug.Log("Turn_" + CurrentTurn);
 		OnTurnFinished?.Invoke(CurrentTurn);
 	}
 
@@ -48,4 +54,5 @@ partial struct TurnSystem : ISystem
 		CurrentTurn = 1;
 		OnTurnFinished?.Invoke(CurrentTurn);
 	}
+
 }

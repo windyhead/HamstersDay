@@ -6,6 +6,7 @@ using Unity.Mathematics;
 		public Entity HamsterPrefab;
 		public Entity PlayerPrefab;
 		public Entity HousePrefab;
+		public Entity CelestialGate;
 		public Entity StonePrefab;
 		public Entity FlowersPrefab;
 		public int2 PlayerPosition;

@@ -10,7 +10,11 @@ using Random = Unity.Mathematics.Random;
 [UpdateAfter(typeof(BotSpawnSystem))]
 partial struct SnakeSpawnSystem : ISystem
 {
+	public static Action OnSnakeSpawned;
+	public static Action OnSnakeGone;
+	public static bool IsSnakeSpawned { get; private set; }
 	private static bool spawnSnake;
+
 	public void OnCreate(ref SystemState state)
 	{
 		state.RequireForUpdate<SnakeSpawnerComponent>();
@@ -19,10 +23,20 @@ partial struct SnakeSpawnSystem : ISystem
 
 	private void DetectSnakeSpawn()
 	{
+		if (GameController.CurrentStage == 1) 
+			return;
+		
 		var random = Random.CreateFromIndex((uint)(GameController.RandomSeed + PopulationSystem.Population));
 		var randomNumber = random.NextInt(0, (TilesSpawnSystem.Rows -1) * (TilesSpawnSystem.Columns -1));
-		if (randomNumber <= PopulationSystem.Population + 5)
+		
+		if (randomNumber <= PopulationSystem.Population + 20)
 			spawnSnake = true;
+		
+		else if (IsSnakeSpawned)
+		{
+			IsSnakeSpawned = false;
+			OnSnakeGone?.Invoke();
+		}
 	}
 
 	[BurstCompile]
@@ -34,6 +48,11 @@ partial struct SnakeSpawnSystem : ISystem
 	{
 		if(!spawnSnake)
 			return;
+		
+		if(!IsSnakeSpawned) 
+			OnSnakeSpawned?.Invoke();
+		
+		IsSnakeSpawned = true;
 		spawnSnake = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
@@ -59,7 +78,7 @@ partial struct SnakeSpawnSystem : ISystem
 			var randomComponent = new RandomComponent() { Value = random };
 			ECB.AddComponent(snakeHead, randomComponent);
 			
-			var actionComponent = new ActionComponent() { Action = Actions.None };
+			var actionComponent = new ActionComponent() { CurrentAction = Actions.None };
 			ECB.AddComponent<ActionComponent>(snakeHead, actionComponent);
 			
 			var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
@@ -88,7 +107,7 @@ partial struct SnakeSpawnSystem : ISystem
 				
 				ECB.AddComponent(snakeBody, new SnakeTag());
 				
-				new ActionComponent() { Action = Actions.None };
+				new ActionComponent() { CurrentAction = Actions.None };
 				ECB.AddComponent<ActionComponent>(snakeBody, actionComponent);
 				
 				ECB.AddComponent(snakeBody, orientationComponent);
@@ -101,5 +120,10 @@ partial struct SnakeSpawnSystem : ISystem
 					new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
 			}
 		}
+	}
+
+	public static void Reset()
+	{
+		IsSnakeSpawned = false;
 	}
 }

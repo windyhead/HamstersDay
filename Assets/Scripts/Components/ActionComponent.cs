@@ -10,5 +10,7 @@ public enum Actions
 
 public struct ActionComponent : IComponentData
 {
-	public Actions Action;
+	public Actions PreviousAction;
+	public Actions CurrentAction;
+	public Actions ActiveAction;
 }

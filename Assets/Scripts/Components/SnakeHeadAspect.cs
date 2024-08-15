@@ -15,12 +15,17 @@ public readonly partial struct SnakeHeadAspect : IAspect, ICreature
 	
 	public Actions GetAction()
 	{
-		return actionComponent.ValueRW.Action;
+		return actionComponent.ValueRW.CurrentAction;
 	}
 
 	public void SetAction(Actions action)
 	{
-		actionComponent.ValueRW.Action = action;
+		actionComponent.ValueRW.CurrentAction = action;
+	}
+	
+	public void SetActiveAction(Actions action)
+	{
+		actionComponent.ValueRW.ActiveAction = action;
 	}
 
 	public Orientation GetCurrentOrientation()

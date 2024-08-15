@@ -17,23 +17,55 @@ partial struct RotationSystem : ISystem
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state)
 	{
+		new SnakeBodyRotationJob().Schedule();
+		new SnakeHeadRotationJob{Time = SystemAPI.Time.DeltaTime}.Schedule();
 		new RotationJob{Time = SystemAPI.Time.DeltaTime}.Schedule();
 	}
 
 	public partial struct RotationJob : IJobEntity
 	{
 		public float Time;
-		private void Execute(ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
+		private void Execute(in HamsterTag hamsterTag,ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
 		{
 			if(rotationComponent.RotationFinished)
 				return;
 
 			var angle = math.angle(rotationComponent.TargetRotation, transform.Rotation);
-			if (angle <= 0.1)
+			if (angle <= 0.05)
+				rotationComponent.RotationFinished = true;
+			
+			var speed = SnakeSpawnSystem.IsSnakeSpawned ? 250 : 120;
+			if (!rotationComponent.RotationFinished)
+				transform.Rotation = Quaternion.RotateTowards(transform.Rotation,rotationComponent.TargetRotation,speed * Time);
+		}
+	}
+	
+	public partial struct SnakeBodyRotationJob : IJobEntity
+	{
+		private void Execute(in SnakeBodyElementComponent snakeElement, ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
+		{
+			if(rotationComponent.RotationFinished)
+				return;
+			
+			transform.Rotation = rotationComponent.TargetRotation;
+			rotationComponent.RotationFinished = true;
+		}
+	}
+	
+	public partial struct SnakeHeadRotationJob : IJobEntity
+	{
+		public float Time;
+		private void Execute(in SnakeHeadComponent snakeHeadComponent, ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
+		{
+			if(rotationComponent.RotationFinished)
+				return;
+
+			var angle = math.angle(rotationComponent.TargetRotation, transform.Rotation);
+			if (angle <= 0.05)
 				rotationComponent.RotationFinished = true;
 			
 			if (!rotationComponent.RotationFinished)
-				transform.Rotation = Quaternion.RotateTowards(transform.Rotation,rotationComponent.TargetRotation,120 * Time);
+				transform.Rotation = Quaternion.RotateTowards(transform.Rotation,rotationComponent.TargetRotation,300 * Time);
 		}
 	}
 }

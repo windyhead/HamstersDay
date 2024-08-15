@@ -7,6 +7,7 @@ using Unity.Entities;
 public partial struct GameOverSystem : ISystem
 {
 	public static Action OnGameOver;
+	private static bool gameOver;
 	public void OnCreate(ref SystemState state)
 	{
 	}
@@ -17,16 +18,21 @@ public partial struct GameOverSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		if (!GameController.IsTurnFinished)
+		if (gameOver || !GameController.IsTurnFinished)
 			return;
 
-		foreach (var (aspect, entity) in SystemAPI.Query<PlayerAspect>().WithEntityAccess())
+		foreach (var aspect in SystemAPI.Query<PlayerAspect>())
 		{
 			var currentTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, aspect.GetCoordinates().y);
 			if (currentTile.Creature == Tile.CreatureType.Snake)
 			{
+				gameOver = true;
 				OnGameOver?.Invoke();
 			}
 		}
+	}
+	public static void Reset()
+	{
+		gameOver = false;
 	}
 }

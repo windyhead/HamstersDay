@@ -11,6 +11,8 @@ using Random = Unity.Mathematics.Random;
 [UpdateAfter(typeof(PlayerSpawnSystem))]
 partial struct StageSpawnSystem : ISystem
 {
+	private static bool inCelestialWorld;
+	
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
@@ -39,6 +41,7 @@ partial struct StageSpawnSystem : ISystem
 		{
 			var house = ECB.Instantiate(aspect.HouseEntity);
 			ECB.SetName(house,"HOUSE");
+			ECB.AddComponent(house, new TerrainTag());
 			var tile = TilesSpawnSystem.GetTile(aspect.HousePosition.x, aspect.HousePosition.y);
 			var orientationComponent = new OrientationComponent()
 			{
@@ -63,6 +66,7 @@ partial struct StageSpawnSystem : ISystem
 			{
 				var stone = ECB.Instantiate(aspect.StoneEntity);
 				ECB.SetName(stone, "STONE");
+				ECB.AddComponent(stone, new TerrainTag());
 				var random = Random.CreateFromIndex((uint)(RandomNumber + i));
 				var tile = TilesSpawnSystem.GetRandomTile(random,true);
 				tile.SetType(Tile.TileType.Rocks);
@@ -86,6 +90,7 @@ partial struct StageSpawnSystem : ISystem
 			{
 				var flowers = ECB.Instantiate(aspect.FlowerEntity);
 				ECB.SetName(flowers, "FLOWERS");
+				ECB.AddComponent(flowers, new TerrainTag());
 				var random = Random.CreateFromIndex((uint)(RandomNumber + i));
 				var tile = TilesSpawnSystem.GetRandomTile(random,true);
 				tile.SetType(Tile.TileType.Grass);

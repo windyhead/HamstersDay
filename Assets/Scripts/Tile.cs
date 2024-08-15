@@ -54,6 +54,7 @@ public class Tile
 
 	public void Reset()
 	{
+		Type = TileType.Plains; 
 		Exit();
 	}
 

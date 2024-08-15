@@ -234,8 +234,8 @@ MonoBehaviour:
     x: 8
     y: 8
   HouseOrientation: 0
-  StoneCount: 3
-  FlowersCount: 6
+  StoneCount: 4
+  FlowersCount: 8
 --- !u!1 &2082735174
 GameObject:
   m_ObjectHideFlags: 0
