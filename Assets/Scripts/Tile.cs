@@ -6,7 +6,7 @@ public class Tile
 	public int2 Coordinates;
 	public float3 Center;
 	public Entity Entity;
-	private readonly float3 centerOffset = new (0,1.5f,0);
+	private readonly float3 centerOffset = new (0,1.7f,0);
 	
 	public bool IsFinal => 	Coordinates.x + 1 == TilesSpawnSystem.Rows &&
 	                        Coordinates.y + 1 == TilesSpawnSystem.Columns;

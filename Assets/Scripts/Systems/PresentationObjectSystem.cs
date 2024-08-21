@@ -22,7 +22,7 @@ public partial struct PresentationObjectSystem :ISystem
 		foreach (var (presentationObject,entity) in SystemAPI.Query<PresentationObject>().WithNone<AnimatorReference>().WithEntityAccess())
 		{
 			var newObject = GameObject.Instantiate(presentationObject.Prefab);
-			newObject.name = "playerPresentation";
+			newObject.name = "HamsterPresentation";
 			buffer.AddComponent(entity,new AnimatorReference{ Animator = newObject.GetComponent<Animator>()});
 			buffer.AddComponent(entity,new MeshRendererReference(){ MeshRenderers = newObject.GetComponent<MeshRendererReferenceMono>()});
 		}
