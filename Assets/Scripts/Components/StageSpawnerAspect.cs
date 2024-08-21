@@ -4,8 +4,7 @@ using Unity.Mathematics;
 public readonly partial struct StageSpawnerAspect :IAspect
 {
     private readonly RefRW<StageSpawnerComponent> stageSpawner;
-    public Entity PlayerEntity => stageSpawner.ValueRW.PlayerPrefab;
-    public Entity BotEntity => stageSpawner.ValueRW.HamsterPrefab;
+    public Entity HamsterEntity => stageSpawner.ValueRW.HamsterPrefab;
     public Entity HouseEntity => stageSpawner.ValueRW.HousePrefab;
     
     public Entity GateEntity => stageSpawner.ValueRW.CelestialGate;

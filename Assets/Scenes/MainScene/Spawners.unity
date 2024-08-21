@@ -216,12 +216,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fa9a4e08ac3eca42b464ae20c865f54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 2943141955409483336, guid: e1dd596e8d723e240bbc9c652b4b7d64,
-    type: 3}
-  HamsterPrefab: {fileID: 2943141955409483336, guid: fcb935549004f284cadc796a8b2b0d57,
+  HamsterPrefab: {fileID: 5438716245150277960, guid: 2ec9796dea1c61349b7453b06c938f09,
     type: 3}
   HousePrefab: {fileID: 5968063767119423112, guid: f5b08780a98c8234eb97a51e3ed5f470,
     type: 3}
+  GatePrefab: {fileID: 0}
   StonePrefab: {fileID: 2530229983680823798, guid: c056dd1e10103424c82e80acac9560fd,
     type: 3}
   FlowersPrefab: {fileID: 2530229983680823798, guid: 0d30e543cf9bb874b960f609dccdf567,

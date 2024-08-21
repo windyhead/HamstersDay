@@ -4,7 +4,6 @@ using Unity.Mathematics;
 	public struct StageSpawnerComponent : IComponentData
 	{
 		public Entity HamsterPrefab;
-		public Entity PlayerPrefab;
 		public Entity HousePrefab;
 		public Entity CelestialGate;
 		public Entity StonePrefab;

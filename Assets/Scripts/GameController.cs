@@ -101,6 +101,9 @@ public class GameController : SingletonBehaviour
 		var playerSpawn = HamsterWorld.GetOrCreateSystem(typeof(PlayerSpawnSystem));
 		playerSpawn.Update(HamsterWorld.Unmanaged);
 		
+		//var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
+		//presentation.Update(HamsterWorld.Unmanaged);
+		
 		var stageSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
 		stageSpawn.Update(HamsterWorld.Unmanaged);
 		
@@ -113,6 +116,9 @@ public class GameController : SingletonBehaviour
 		var initializationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<InitializationSystemGroup>();
 		var snakeSpawn = HamsterWorld.GetOrCreateSystem(typeof(SnakeSpawnSystem));
 		initializationSystemGroup.AddSystemToUpdateList(snakeSpawn);
+		
+		//var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
+		//initializationSystemGroup.AddSystemToUpdateList(presentation);
 		
 		var simulationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<SimulationSystemGroup>();
 		

@@ -32,7 +32,7 @@ partial struct PlayerSpawnSystem : ISystem
 
 		private void Execute(StageSpawnerAspect aspect)
 		{
-			var newHamster = ECB.Instantiate( aspect.PlayerEntity);
+			var newHamster = ECB.Instantiate(aspect.HamsterEntity);
 			ECB.SetName(newHamster,"Player");
 			ECB.AddComponent<PlayerComponent>(newHamster);
 			ECB.AddComponent(newHamster,new HamsterTag());

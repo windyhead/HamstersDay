@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StageSpawnerAuthoring : MonoBehaviour
 {
-	public GameObject PlayerPrefab;
 	public GameObject HamsterPrefab;
 	public GameObject HousePrefab;
 	public GameObject GatePrefab;
@@ -26,7 +25,6 @@ class StageSpawnerBaker : Baker<StageSpawnerAuthoring>
 	{
 		AddComponent(new StageSpawnerComponent
 		{
-			PlayerPrefab = GetEntity(authoring.PlayerPrefab),
 			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
 			HousePrefab = GetEntity(authoring.HousePrefab),
 			CelestialGate = GetEntity(authoring.GatePrefab),
