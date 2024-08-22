@@ -3,6 +3,8 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
+[DisableAutoCreation]
+[UpdateInGroup(typeof(InitializationSystemGroup), OrderFirst = false)]
 public partial struct PresentationObjectSystem :ISystem
 {
 	public void OnCreate(ref SystemState state)

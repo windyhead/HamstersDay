@@ -6,8 +6,7 @@ using Random = Unity.Mathematics.Random;
 
 [BurstCompile]
 [DisableAutoCreation]
-[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = false)]
-[UpdateAfter(typeof(BotSpawnSystem))]
+[UpdateAfter(typeof(PresentationObjectSystem))]
 partial struct SnakeSpawnSystem : ISystem
 {
 	public static Action OnSnakeSpawned;

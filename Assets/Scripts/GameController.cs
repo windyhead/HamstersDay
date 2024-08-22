@@ -114,11 +114,12 @@ public class GameController : SingletonBehaviour
 	private static void SetSystems()
 	{
 		var initializationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<InitializationSystemGroup>();
+		
+		var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
+		initializationSystemGroup.AddSystemToUpdateList(presentation);
+		
 		var snakeSpawn = HamsterWorld.GetOrCreateSystem(typeof(SnakeSpawnSystem));
 		initializationSystemGroup.AddSystemToUpdateList(snakeSpawn);
-		
-		//var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
-		//initializationSystemGroup.AddSystemToUpdateList(presentation);
 		
 		var simulationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<SimulationSystemGroup>();
 		
@@ -147,6 +148,9 @@ public class GameController : SingletonBehaviour
 		
 		var rotationSystem = HamsterWorld.GetOrCreateSystem(typeof(RotationSystem));
 		transformSystemGroup.AddSystemToUpdateList(rotationSystem);
+		
+		var animationSystem = HamsterWorld.GetOrCreateSystem(typeof(AnimationSystem));
+		transformSystemGroup.AddSystemToUpdateList(animationSystem);
 		
 		var lateSystemGroup = HamsterWorld.GetOrCreateSystemManaged<LateSimulationSystemGroup>();
 		
