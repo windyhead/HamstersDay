@@ -2341,7 +2341,7 @@ GameObject:
   - component: {fileID: 1181266943}
   - component: {fileID: 1181266942}
   m_Layer: 0
-  m_Name: Secondary Audio Source (1)
+  m_Name: Secondary Audio Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2487,6 +2487,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49cbbcf9569f4fc4c92e1c640c593d71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VolumeLevel: 0.589
   musicSource:
   - {fileID: 2031959302}
   - {fileID: 1181266942}

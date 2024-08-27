@@ -1,6 +1,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine;
 
 [DisableAutoCreation]
 [UpdateAfter(typeof(PlayerSpawnSystem))]
@@ -26,6 +27,14 @@ public partial struct AnimationSystem :ISystem
 			animator.Animator.transform.position = transform.Position;
 			animator.Animator.transform.rotation = transform.Rotation;
 		}
+		
+		foreach (var (animator,entity) in 
+		         SystemAPI.Query<AnimatorReference>().WithNone<PresentationObject,LocalTransform>().WithEntityAccess())
+		{
+			Object.Destroy(animator.Animator.gameObject);
+			buffer.RemoveComponent<AnimatorReference>(entity);
+		}
+		
 		buffer.Playback(state.EntityManager);
 		buffer.Dispose();
 	}

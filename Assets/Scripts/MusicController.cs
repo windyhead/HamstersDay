@@ -1,10 +1,11 @@
-using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
 public class MusicController : SingletonBehaviour
 {
+	[Range(0, 1)]
+	[SerializeField] private float VolumeLevel;
 	[SerializeField] private AudioSource[] musicSource;
 	[SerializeField] private AudioClip[] peaceful;
 	[SerializeField] private AudioClip panic;
@@ -53,7 +54,7 @@ public class MusicController : SingletonBehaviour
 		int secondary = primaryMusicSource == 0 ? 1:0;
 		musicSource[primaryMusicSource].DOFade(0, 3);
 		musicSource[secondary].PlayOneShot(newClip);
-		musicSource[secondary].DOFade(1, 5);
+		musicSource[secondary].DOFade(VolumeLevel, 5);
 		yield return new WaitForSeconds(5);
 		musicSource[primaryMusicSource].Stop();
 		musicSource[primaryMusicSource].loop = false;

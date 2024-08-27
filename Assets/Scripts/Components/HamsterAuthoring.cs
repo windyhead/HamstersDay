@@ -19,11 +19,11 @@ public class MeshRendererReference : IComponentData
 }
 
 [Serializable]
-public class AnimatorReference : IComponentData
+public class AnimatorReference : ICleanupComponentData
 {
 	public Animator Animator;
 }
-public class  HamsterComponentBaker : Baker<HamsterAuthoring>
+public class HamsterComponentBaker : Baker<HamsterAuthoring>
 {
 	public override void Bake(HamsterAuthoring authoring)
 	{
