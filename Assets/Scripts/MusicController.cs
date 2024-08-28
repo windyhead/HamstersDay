@@ -2,7 +2,7 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
-public class MusicController : SingletonBehaviour
+public class MusicController : SingletonBehaviour<MusicController>
 {
 	[Range(0, 1)]
 	[SerializeField] private float VolumeLevel;

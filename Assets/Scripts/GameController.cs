@@ -1,21 +1,17 @@
 using System;
 using System.Collections;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
-public class GameController : SingletonBehaviour
+public class GameController : SingletonBehaviour<GameController>
 {
 	public static Action<int> OnStageChanged;
 	public static Action OnPopulationChanged;
 	public static Action OnGameReset;
 	public static Action OnGameStarted;
-	public static Action OnSnakeDestroyed;
 	
 	public static bool PlayerInputReceived;
 	public static bool IsTurnFinished = true;
@@ -26,15 +22,17 @@ public class GameController : SingletonBehaviour
 	[SerializeField] private GameObject startGamePanel;
 	[SerializeField] private GameObject gameOverPanel;
 	
+	[SerializeField] private int startingPopulation;
+
+	public int StartingPopulation => startingPopulation;
+	
 	public static int CurrentStage { get; private set; } = 1;
-	public static int RandomSeed { get; private set; }
-	public int StartingPopulation;
-	private static World HamsterWorld;
+
 	public static PlayerInputSettings PlayerInputSettings { get; private set;}
 
 	private void Awake()
 	{
-		HamsterWorld = World.DefaultGameObjectInjectionWorld;
+		SystemsController.CreateWorld();
 		startGameButton.onClick.AddListener(StartGame);
 		restartButton.onClick.AddListener(ResetGame);
 		quitButton.onClick.AddListener(QuitGame);
@@ -68,9 +66,9 @@ public class GameController : SingletonBehaviour
 		SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
 		yield return new WaitForSeconds(1);
 		startGamePanel.SetActive(false);
-		PopulationSystem.SetStartingPopulation(StartingPopulation);
+		SystemsController.SetStartingPopulation();
 		SetStage();
-		SetSystems();
+		SystemsController.SetSystems();
 		OnStageChanged?.Invoke(CurrentStage);
 		OnGameStarted?.Invoke();
 	}
@@ -92,156 +90,28 @@ public class GameController : SingletonBehaviour
 
 	private static void SetStage()
 	{
-		RandomSeed = Random.Range(1, 101);
 		CurrentStage = 1;
-		
-		var tileSpawn = HamsterWorld.GetOrCreateSystem(typeof(TilesSpawnSystem));
-		tileSpawn.Update(HamsterWorld.Unmanaged);
-		
-		var playerSpawn = HamsterWorld.GetOrCreateSystem(typeof(PlayerSpawnSystem));
-		playerSpawn.Update(HamsterWorld.Unmanaged);
-		
-		//var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
-		//presentation.Update(HamsterWorld.Unmanaged);
-		
-		var stageSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
-		stageSpawn.Update(HamsterWorld.Unmanaged);
-		
-		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
-		botSpawn.Update(HamsterWorld.Unmanaged);
-	}
-
-	private static void SetSystems()
-	{
-		var initializationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<InitializationSystemGroup>();
-		
-		var presentation = HamsterWorld.GetOrCreateSystem(typeof(PresentationObjectSystem));
-		initializationSystemGroup.AddSystemToUpdateList(presentation);
-		
-		var snakeSpawn = HamsterWorld.GetOrCreateSystem(typeof(SnakeSpawnSystem));
-		initializationSystemGroup.AddSystemToUpdateList(snakeSpawn);
-		
-		var simulationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<SimulationSystemGroup>();
-		
-		var inputSystem = HamsterWorld.GetOrCreateSystem(typeof(InputDetectionSystem));
-		simulationSystemGroup.AddSystemToUpdateList(inputSystem);
-		
-		var botDecision = HamsterWorld.GetOrCreateSystem(typeof(BotDecisionSystem));
-		simulationSystemGroup.AddSystemToUpdateList(botDecision);
-		
-		var snakeDecision = HamsterWorld.GetOrCreateSystem(typeof(SnakeDecisionSystem));
-		simulationSystemGroup.AddSystemToUpdateList(snakeDecision);
-		
-		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(OrientationSystem));
-		simulationSystemGroup.AddSystemToUpdateList(orientationSystem);
-		
-		var snakeElementsSystem = HamsterWorld.GetOrCreateSystem(typeof(SnakeElementSystem));
-		simulationSystemGroup.AddSystemToUpdateList(snakeElementsSystem);
-		
-		var destroy= HamsterWorld.GetOrCreateSystem(typeof(BotDestroySystem));
-		simulationSystemGroup.AddSystemToUpdateList(destroy);
-		
-		var transformSystemGroup = HamsterWorld.GetOrCreateSystemManaged<TransformSystemGroup>();
-		
-		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));
-		transformSystemGroup.AddSystemToUpdateList(moveSystem);
-		
-		var rotationSystem = HamsterWorld.GetOrCreateSystem(typeof(RotationSystem));
-		transformSystemGroup.AddSystemToUpdateList(rotationSystem);
-		
-		var animationSystem = HamsterWorld.GetOrCreateSystem(typeof(AnimationSystem));
-		transformSystemGroup.AddSystemToUpdateList(animationSystem);
-		
-		var lateSystemGroup = HamsterWorld.GetOrCreateSystemManaged<LateSimulationSystemGroup>();
-		
-		var endTurn= HamsterWorld.GetOrCreateSystem(typeof(TurnSystem));
-		lateSystemGroup.AddSystemToUpdateList(endTurn);
-		TurnSystem.ResetTimer();
-		
-		var gameOverSystem = HamsterWorld.GetOrCreateSystem(typeof(GameOverSystem));
-		lateSystemGroup.AddSystemToUpdateList(gameOverSystem);
-		
-		var population= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
-		lateSystemGroup.AddSystemToUpdateList(population);
-		
-		var stageComplete= HamsterWorld.GetOrCreateSystem(typeof(CompleteStageSystem));
-		lateSystemGroup.AddSystemToUpdateList(stageComplete);
-		
-		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(stageComplete);
-		CompleteStageSystem.ResetStage();
-		state.Enabled = true;
+		SystemsController.SetStage();
 	}
 
 	private void NextStage()
 	{
-		PopulationSystem.ResetPopulationCounter();
 		CurrentStage ++;
 		ResetStage();
 	}
 
 	private void ResetStage()
 	{
-		RandomSeed = Random.Range(1, 101);
-		TilesSpawnSystem.ResetTiles();
-		
-		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
-		DestroyTerrain();
-		DestroyBots();
-		DestroySnake();
-		
-		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerResetSystem));
-		playerReset.Update(HamsterWorld.Unmanaged);
-		
-		var terrainSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
-		terrainSpawn.Update(HamsterWorld.Unmanaged);
-		
-		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
-		botSpawn.Update(HamsterWorld.Unmanaged);
-
-		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
-		ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
-		state.Enabled = true;
-		
-		TurnSystem.ResetTimer();
+		SystemsController.ResetStage();
 		OnStageChanged?.Invoke(CurrentStage);
 		OnPopulationChanged?.Invoke();
-	}
-	
-	private void DestroyTerrain()
-	{
-		var terrainQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<TerrainTag>().Build(HamsterWorld.EntityManager);
-		var entities = terrainQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		terrainQuery.Dispose();
-		entities.Dispose();
-	}
-
-	private void DestroyBots()
-	{
-		var botQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<BotComponent>().Build(HamsterWorld.EntityManager);
-		var entities = botQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		botQuery.Dispose();
-		entities.Dispose();
-	}
-
-	private void DestroySnake()
-	{
-		var snakeQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<SnakeTag>().Build(HamsterWorld.EntityManager);
-		var entities = snakeQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		entities.Dispose();
-		snakeQuery.Dispose();
-		OnSnakeDestroyed?.Invoke();
 	}
 
 	private void ResetGame()
 	{
 		CurrentStage = 1;
-		PopulationSystem.SetStartingPopulation(StartingPopulation);
+		SystemsController.ResetGame();
 		ResetStage();
-		SnakeSpawnSystem.Reset();
-		GameOverSystem.Reset();
 		OnGameReset?.Invoke();
 		gameOverPanel.SetActive(false);
 	}

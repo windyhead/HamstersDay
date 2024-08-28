@@ -25,7 +25,7 @@ partial struct BotSpawnSystem : ISystem
 	{
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = GameController.RandomSeed}.Schedule();
+		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
 	}
 
 	public partial struct BotSpawnSystemJob : IJobEntity

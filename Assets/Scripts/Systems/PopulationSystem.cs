@@ -44,9 +44,9 @@ partial class PopulationSystem : SystemBase
 		OnPopulationChanged?.Invoke(-count);
 	}
 
-	public static void SetStartingPopulation(int startingPopulation)
+	public static void SetStartingPopulation()
 	{
-		Population = startingPopulation;
+		Population = GameController.Instance.StartingPopulation;
 	}
 
 	public static void ResetPopulationCounter()

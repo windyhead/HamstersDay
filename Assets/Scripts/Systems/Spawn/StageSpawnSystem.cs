@@ -29,8 +29,8 @@ partial struct StageSpawnSystem : ISystem
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 		new HouseSpawnSystemJob(){ECB = buffer}.Schedule();
-		new StoneSpawnSystemJob(){ECB = buffer,RandomNumber = GameController.RandomSeed}.Schedule();
-		new FlowersSpawnSystemJob(){ECB = buffer,RandomNumber = GameController.RandomSeed}.Schedule();
+		new StoneSpawnSystemJob(){ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
+		new FlowersSpawnSystemJob(){ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
 	}
 	
 	public partial struct HouseSpawnSystemJob : IJobEntity

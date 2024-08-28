@@ -4781,7 +4781,7 @@ MonoBehaviour:
   quitButton: {fileID: 1446938159}
   startGamePanel: {fileID: 1577441702}
   gameOverPanel: {fileID: 1755781990}
-  StartingPopulation: 5
+  startingPopulation: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

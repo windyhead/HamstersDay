@@ -12,12 +12,14 @@ partial struct SnakeSpawnSystem : ISystem
 	public static Action OnSnakeSpawned;
 	public static Action OnSnakeGone;
 	public static bool IsSnakeSpawned { get; private set; }
-	private static bool spawnSnake;
+	private static bool isSnakeMoment;
 
 	public void OnCreate(ref SystemState state)
 	{
 		state.RequireForUpdate<SnakeSpawnerComponent>();
 		GameController.OnPopulationChanged += DetectSnakeSpawn;
+		isSnakeMoment = false;
+		IsSnakeSpawned = false;
 	}
 
 	private void DetectSnakeSpawn()
@@ -25,11 +27,11 @@ partial struct SnakeSpawnSystem : ISystem
 		if (GameController.CurrentStage == 1) 
 			return;
 		
-		var random = Random.CreateFromIndex((uint)(GameController.RandomSeed + PopulationSystem.Population));
+		var random = Random.CreateFromIndex((uint)(SystemsController.RandomSeed + PopulationSystem.Population));
 		var randomNumber = random.NextInt(0, (TilesSpawnSystem.Rows -1) * (TilesSpawnSystem.Columns -1));
 		
 		if (randomNumber <= PopulationSystem.Population + 20)
-			spawnSnake = true;
+			isSnakeMoment = true;
 		
 		else if (IsSnakeSpawned)
 		{
@@ -45,17 +47,17 @@ partial struct SnakeSpawnSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		if(!spawnSnake)
+		if(!isSnakeMoment)
 			return;
 		
 		if(!IsSnakeSpawned) 
 			OnSnakeSpawned?.Invoke();
 		
 		IsSnakeSpawned = true;
-		spawnSnake = false;
+		isSnakeMoment = false;
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new SnakeSpawnSystemJob() { ECB = buffer, RandomNumber = GameController.RandomSeed }.Schedule();
+		new SnakeSpawnSystemJob() { ECB = buffer, RandomNumber = SystemsController.RandomSeed }.Schedule();
 	}
 
 	public partial struct SnakeSpawnSystemJob : IJobEntity
