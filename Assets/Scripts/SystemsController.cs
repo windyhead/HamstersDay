@@ -1,4 +1,3 @@
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Random = UnityEngine.Random;
@@ -134,29 +133,17 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 	
 	private static void DestroyTerrain()
 	{
-		var terrainQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<TerrainTag>().Build(HamsterWorld.EntityManager);
-		var entities = terrainQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		terrainQuery.Dispose();
-		entities.Dispose();
+		EntityUtils.DestroyEntitiesWithComponent<TerrainTag>(HamsterWorld);
 	}
 
 	private static void DestroyBots()
 	{
-		var botQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<BotComponent>().Build(HamsterWorld.EntityManager);
-		var entities = botQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		botQuery.Dispose();
-		entities.Dispose();
+		EntityUtils.DestroyEntitiesWithComponent<BotComponent>(HamsterWorld);
 	}
 
 	private static void DestroySnake()
 	{
 		SnakeDecisionSystem.ClearActions();
-		var snakeQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<SnakeTag>().Build(HamsterWorld.EntityManager);
-		var entities = snakeQuery.ToEntityArray(Allocator.TempJob);
-		HamsterWorld.EntityManager.DestroyEntity(entities);
-		entities.Dispose();
-		snakeQuery.Dispose();
+		EntityUtils.DestroyEntitiesWithComponent<SnakeTag>(HamsterWorld);
 	}
 }
