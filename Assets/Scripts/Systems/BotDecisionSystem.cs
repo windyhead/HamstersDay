@@ -2,7 +2,7 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(InputDetectionSystem))]
+[UpdateAfter(typeof(PopulationSystem))]
 partial struct BotDecisionSystem : ISystem
 {
 	public void OnCreate(ref SystemState state)

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class MusicController : SingletonBehaviour<MusicController>
 {
+	private readonly float oldMusicMuteTime = 3;
+	private readonly float newMusicIncreaseTimeFast = 3;
+	private readonly float newMusicIncreaseTimeSlow = 5;
 	[Range(0, 1)]
 	[SerializeField] private float VolumeLevel;
 	[SerializeField] private AudioSource[] musicSource;
@@ -48,14 +51,20 @@ public class MusicController : SingletonBehaviour<MusicController>
 		musicSource[primaryMusicSource].loop = true;
 	}
 
-	private IEnumerator MuteAndPlay(AudioClip newClip)
+	private IEnumerator MuteAndPlay(AudioClip newClip, bool immediately = false)
 	{
 		isSwitchingClip = true;
 		int secondary = primaryMusicSource == 0 ? 1:0;
-		musicSource[primaryMusicSource].DOFade(0, 3);
+		
+		musicSource[primaryMusicSource].DOFade(0, 
+			immediately ? 0 : oldMusicMuteTime);
+		
 		musicSource[secondary].PlayOneShot(newClip);
-		musicSource[secondary].DOFade(VolumeLevel, 5);
-		yield return new WaitForSeconds(5);
+		musicSource[secondary].DOFade(VolumeLevel, 
+			immediately ? newMusicIncreaseTimeFast : newMusicIncreaseTimeSlow);
+		
+		yield return new WaitForSeconds(immediately ? newMusicIncreaseTimeFast : newMusicIncreaseTimeSlow);
+		
 		musicSource[primaryMusicSource].Stop();
 		musicSource[primaryMusicSource].loop = false;
 		primaryMusicSource = secondary;
@@ -77,6 +86,6 @@ public class MusicController : SingletonBehaviour<MusicController>
 	
 	private void Reset()
 	{
-		StartCoroutine(MuteAndPlay(peaceful[0]));
+		StartCoroutine(MuteAndPlay(peaceful[0],true));
 	}
 }

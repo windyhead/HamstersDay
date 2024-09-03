@@ -5,20 +5,32 @@ using Random = UnityEngine.Random;
 public class SystemsController : SingletonBehaviour<SystemsController>
 {
 	public static int RandomSeed { get; private set; }
-	
 	private static World HamsterWorld;
 	
-	public static void CreateWorld()
+	private void Awake()
+	{
+		GameController.OnEntitySceneLoaded += SetWorld;
+		GameController.OnStageChanged += ResetStage;
+		GameController.OnGameReset += ResetGame;
+	}
+	
+	private void OnDestroy()
+	{
+		GameController.OnEntitySceneLoaded -= SetWorld;
+		GameController.OnStageChanged -= ResetStage;
+		GameController.OnGameReset -= ResetGame;
+		World.DisposeAllWorlds();
+	}
+
+	private void SetWorld()
 	{
 		HamsterWorld = World.DefaultGameObjectInjectionWorld;
-	}
-	
-	public static void SetStartingPopulation()
-	{
 		PopulationSystem.SetStartingPopulation();
+		SetStage();
+		SetSystems();
 	}
-	
-	public static void SetStage()
+
+	private void SetStage()
 	{
 		RandomSeed = Random.Range(1, 101);
 		
@@ -35,7 +47,7 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		botSpawn.Update(HamsterWorld.Unmanaged);
 	}
 
-	public static void SetSystems()
+	private void SetSystems()
 	{
 		var initializationSystemGroup = HamsterWorld.GetOrCreateSystemManaged<InitializationSystemGroup>();
 		
@@ -49,6 +61,9 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		
 		var inputSystem = HamsterWorld.GetOrCreateSystem(typeof(InputDetectionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(inputSystem);
+		
+		var population= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
+		simulationSystemGroup.AddSystemToUpdateList(population);
 		
 		var botDecision = HamsterWorld.GetOrCreateSystem(typeof(BotDecisionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(botDecision);
@@ -85,9 +100,6 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var gameOverSystem = HamsterWorld.GetOrCreateSystem(typeof(GameOverSystem));
 		lateSystemGroup.AddSystemToUpdateList(gameOverSystem);
 		
-		var population= HamsterWorld.GetOrCreateSystem(typeof(PopulationSystem));
-		lateSystemGroup.AddSystemToUpdateList(population);
-		
 		var stageComplete= HamsterWorld.GetOrCreateSystem(typeof(CompleteStageSystem));
 		lateSystemGroup.AddSystemToUpdateList(stageComplete);
 		
@@ -95,8 +107,8 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		CompleteStageSystem.ResetStage();
 		state.Enabled = true;
 	}
-	
-	public static void ResetStage()
+
+	private void ResetStage(int obj)
 	{
 		PopulationSystem.ResetPopulationCounter();
 		
@@ -124,24 +136,24 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		TurnSystem.ResetTimer();
 	}
 
-	public static void ResetGame()
+	private void ResetGame()
 	{
 		PopulationSystem.SetStartingPopulation();
 		SnakeSpawnSystem.Reset();
 		GameOverSystem.Reset();
 	}
 	
-	private static void DestroyTerrain()
+	private void DestroyTerrain()
 	{
 		EntityUtils.DestroyEntitiesWithComponent<TerrainTag>(HamsterWorld);
 	}
 
-	private static void DestroyBots()
+	private void DestroyBots()
 	{
 		EntityUtils.DestroyEntitiesWithComponent<BotComponent>(HamsterWorld);
 	}
 
-	private static void DestroySnake()
+	private void DestroySnake()
 	{
 		SnakeDecisionSystem.ClearActions();
 		EntityUtils.DestroyEntitiesWithComponent<SnakeTag>(HamsterWorld);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -9,8 +8,10 @@ public class GameController : SingletonBehaviour<GameController>
 {
 	public static Action<int> OnStageChanged;
 	public static Action OnPopulationChanged;
-	public static Action OnGameReset;
+	
+	public static Action OnEntitySceneLoaded;
 	public static Action OnGameStarted;
+	public static Action OnGameReset;
 	
 	public static bool PlayerInputReceived;
 	public static bool IsTurnFinished = true;
@@ -24,7 +25,6 @@ public class GameController : SingletonBehaviour<GameController>
 
 	private void Awake()
 	{
-		SystemsController.CreateWorld();
 		CompleteStageSystem.OnStageComplete += NextStage;
 		PlayerInputSettings = new PlayerInputSettings();
 		PlayerInputSettings.Application.Quit.performed += QuitGame;
@@ -45,17 +45,19 @@ public class GameController : SingletonBehaviour<GameController>
 		UIController.OnStartGamePressed -= StartGame;
 		UIController.OnResetPressed -= ResetGame;
 		UIController.OnQuitPressed -= QuitGame;
-		World.DisposeAllWorlds();
 	}
 
 	private IEnumerator SetUpGame()
 	{
-		SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
+		AsyncOperation asyncLoadLevel = SceneManager.LoadSceneAsync("MainScene",LoadSceneMode.Additive);
+
+		while (!asyncLoadLevel.isDone)
+			yield return 0;
+
 		yield return new WaitForSeconds(1);
-		SystemsController.SetStartingPopulation();
-		SetStage();
-		SystemsController.SetSystems();
-		OnStageChanged?.Invoke(CurrentStage);
+		
+		CurrentStage = 1;
+		OnEntitySceneLoaded?.Invoke();
 		OnGameStarted?.Invoke();
 	}
 
@@ -74,12 +76,6 @@ public class GameController : SingletonBehaviour<GameController>
 #endif
 	}
 
-	private static void SetStage()
-	{
-		CurrentStage = 1;
-		SystemsController.SetStage();
-	}
-
 	private void NextStage()
 	{
 		CurrentStage ++;
@@ -88,7 +84,6 @@ public class GameController : SingletonBehaviour<GameController>
 
 	private void ResetStage()
 	{
-		SystemsController.ResetStage();
 		OnStageChanged?.Invoke(CurrentStage);
 		OnPopulationChanged?.Invoke();
 	}
@@ -96,7 +91,6 @@ public class GameController : SingletonBehaviour<GameController>
 	private void ResetGame()
 	{
 		CurrentStage = 1;
-		SystemsController.ResetGame();
 		ResetStage();
 		OnGameReset?.Invoke();
 	}

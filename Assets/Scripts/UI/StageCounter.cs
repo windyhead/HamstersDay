@@ -8,6 +8,7 @@ public class StageCounter : MonoBehaviour
     private void Awake()
     {
         GameController.OnStageChanged += UpdateStage;
+        UpdateStage(1);
     }
 
     private void OnDestroy()

@@ -3,17 +3,13 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
-[UpdateAfter(typeof(GameOverSystem))]
+[UpdateAfter(typeof(InputDetectionSystem))]
 
 partial class PopulationSystem : SystemBase
 {
 	public static Action<int> OnPopulationChanged;
 	public static int Population { get; private set; } = 1;
 	private static int populationCounter = 0;
-
-	public void OnCreate(ref SystemState state)
-	{
-	}
 	
 	protected override void OnStartRunning()
 	{
@@ -25,6 +21,16 @@ partial class PopulationSystem : SystemBase
 	{
 		TurnSystem.OnTurnFinished -= IncreasePopulation;
 		BotDestroySystem.OnBorDestroyed -= LowerPopulation;
+	}
+	
+	public static void SetStartingPopulation()
+	{
+		Population = GameController.Instance.StartingPopulation;
+	}
+
+	public static void ResetPopulationCounter()
+	{
+		populationCounter = 0;
 	}
 	
 	private void IncreasePopulation(int i)
@@ -42,16 +48,6 @@ partial class PopulationSystem : SystemBase
 	{
 		Population -= count;
 		OnPopulationChanged?.Invoke(-count);
-	}
-
-	public static void SetStartingPopulation()
-	{
-		Population = GameController.Instance.StartingPopulation;
-	}
-
-	public static void ResetPopulationCounter()
-	{
-		populationCounter = 0;
 	}
 
 	protected override void OnUpdate()
