@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
 
 public class GameController : SingletonBehaviour<GameController>
 {
@@ -20,11 +21,16 @@ public class GameController : SingletonBehaviour<GameController>
 	public static int CurrentStage { get; private set; } = 1;
 	
 	public int StartingPopulation => startingPopulation;
+
+	[SerializeField] private AssetReference musicControllerReference;
+	[SerializeField] private AssetReference UIControllerReference;
 	
 	[SerializeField] private int startingPopulation;
 
 	private void Awake()
 	{
+		UIControllerReference.InstantiateAsync();
+		musicControllerReference.InstantiateAsync();
 		CompleteStageSystem.OnStageComplete += NextStage;
 		PlayerInputSettings = new PlayerInputSettings();
 		PlayerInputSettings.Application.Quit.performed += QuitGame;

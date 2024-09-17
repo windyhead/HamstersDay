@@ -16,6 +16,7 @@ public class UIController : SingletonBehaviour<UIController>
     
     void Start()
     {
+        GameController.OnGameStarted += HideStartPanel;
         startGameButton.onClick.AddListener(StartGame);
         restartButton.onClick.AddListener(ResetGame);
         quitButton.onClick.AddListener(QuitGame);
@@ -28,15 +29,20 @@ public class UIController : SingletonBehaviour<UIController>
         restartButton.onClick.RemoveAllListeners();
         quitButton.onClick.RemoveAllListeners();
         GameOverSystem.OnGameOver -= GameOver;
+        GameController.OnGameStarted -= HideStartPanel;
     }
-    
     
     private void StartGame()
     {
-        startGamePanel.SetActive(false);
+        startGameButton.interactable = false;
         OnStartGamePressed?.Invoke();
     }
-    
+
+    private void HideStartPanel()
+    {
+        startGamePanel.SetActive(false);
+    }
+
     private void ResetGame()
     {
         gameOverPanel.SetActive(false);
