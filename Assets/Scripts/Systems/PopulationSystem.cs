@@ -50,8 +50,5 @@ partial class PopulationSystem : SystemBase
 		OnPopulationChanged?.Invoke(-count);
 	}
 
-	protected override void OnUpdate()
-	{
-		
-	}
+	protected override void OnUpdate() { }
 }

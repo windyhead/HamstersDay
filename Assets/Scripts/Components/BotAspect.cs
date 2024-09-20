@@ -1,6 +1,8 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public readonly partial struct BotAspect : IAspect, ICreature
 {
@@ -8,10 +10,13 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	private readonly RefRW<ActionComponent> actionComponent;
 	private readonly RefRW<RandomComponent> randomComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
+	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
+
+	public Random Random => randomComponent.ValueRW.Value;
 
 	public Actions GetAction()
 	{
@@ -26,6 +31,16 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	public Orientation GetCurrentOrientation()
 	{
 		return orientationComponent.ValueRW.CurrentOrientation;
+	}
+	
+	public void SetNewOrientation(Orientation orientation,Tile tile)
+	{
+		orientationComponent.ValueRW = new OrientationComponent()
+		{
+			CurrentOrientation = orientation,
+			CurrentTileCoordinates = tile.Coordinates
+			
+		};
 	}
 
 	public Tile GetForwardTile()
@@ -55,11 +70,18 @@ public readonly partial struct BotAspect : IAspect, ICreature
 		moveComponent.ValueRW.MoveFinished = false;
 	}
 	
+	
 	public void  SetTargetRotation(Quaternion target)
 	{
 		rotationComponent.ValueRW.TargetRotation = target;
 		rotationComponent.ValueRW.RotationFinished = false;
 	}
+	
+	public void SetTransform(Tile tile)
+	{
+		transformComponent.ValueRW = new LocalTransform { Position = tile.Center, Scale = 3, Rotation = GetRotation() };
+	}
+
 	
 	public bool OnFinalTile => TilesSpawnSystem.isFinalTile(orientationComponent.ValueRO.CurrentTileCoordinates);
 	
@@ -87,6 +109,10 @@ public readonly partial struct BotAspect : IAspect, ICreature
 		                 || tile.Type == Tile.TileType.Rocks) 
 			return false;
 		return true;
+	}
+	private Quaternion GetRotation()
+	{
+		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);
 	}
 
 }

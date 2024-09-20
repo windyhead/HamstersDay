@@ -25,8 +25,7 @@ public partial struct BotDisableSystem : ISystem
 			{
 				gameObjectReference.MainObject.SetActive(false);
 				currentTile.Exit();
-				buffer.AddComponent<DisabledTag>(entity);
-				buffer.SetEnabled(entity, false);
+				buffer.AddComponent<Disabled>(entity);
 			}
 		}
 		buffer.Playback(state.EntityManager);
