@@ -1,109 +1,73 @@
-using Unity.Burst;
+using System.Linq;
+using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateAfter(typeof(SnakeDecisionSystem))]
-partial struct OrientationSystem : ISystem
+partial class OrientationSystem : SystemBase
 {
-	public void OnCreate(ref SystemState state)
-	{
-	}
-
-	public void OnDestroy(ref SystemState state)
-	{
-	}
-	
-	public void OnUpdate(ref SystemState state)
-	{
+	private EntityQuery hamsterQuery;
+	protected override void OnUpdate()
+	{ 
 		if (!GameController.PlayerInputReceived)
 			return;
-		new BotOrientationJob().Schedule();
-		new PlayerOrientationJob().Schedule();
+
+		hamsterQuery = SystemAPI.QueryBuilder().WithAspect<HamsterAspect>().Build();
+		var hamsterArray = hamsterQuery.ToEntityArray(Allocator.Temp);
+		var orderedByFat =	hamsterArray.OrderBy(x=>SystemAPI.GetAspect<HamsterAspect>(x).Fat);
+		foreach (var entity in orderedByFat)
+		{
+			var aspect = SystemAPI.GetAspect<HamsterAspect>(entity);
+			
+			var action = aspect.GetAction();
+			if (action == Actions.None)
+				continue;
+			
+			ApplyAction(aspect, action);
+		}
+		hamsterArray.Dispose();
+		
 		new SnakeHeadOrientationJob().Schedule();
 		new SnakeBodyOrientationJob().Schedule();
 	}
-	
-	public partial struct BotOrientationJob : IJobEntity
-	{
-		private void Execute(BotAspect aspect)
-		{
-			var action = aspect.GetAction();
-			if (action == Actions.None)
-				return;
-			
-			aspect.SetAction(Actions.None);
 
-			switch (action)
+	private static void ApplyAction(HamsterAspect aspect, Actions action)
+	{
+		aspect.SetAction(Actions.None);
+
+		switch (action)
+		{
+			case Actions.Move:
 			{
-				case Actions.Move:
-				{
-					var newTile = aspect.GetForwardTile();
-					var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, 
-						aspect.GetCoordinates().y);
-					oldTile.Exit();
-					newTile.Enter(Tile.CreatureType.Hamster);
-					aspect.SetCoordinates(newTile.Coordinates);
-					aspect.SetTargetPosition(newTile.Center);
-					break;
-				}
-				case Actions.TurnLeft:
-				{
-					TurnLeft(aspect);
-					break;
-				}
-    
-				case Actions.TurnRight:
-				{
-					TurnRight(aspect);
-					break;
-				}
+				var newTile = aspect.GetForwardTile();
+				if (!aspect.CanMove(newTile))
+					return;
+			
+				var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x,
+					aspect.GetCoordinates().y);
+				oldTile.Exit();
+			
+				newTile.Enter(Tile.CreatureType.Hamster);
+				aspect.SetCoordinates(newTile.Coordinates);
+				aspect.SetTargetPosition(newTile.Center);
+				break;
+			}
+			case Actions.TurnLeft:
+			{
+				TurnLeft(aspect);
+				break;
+			}
+			
+			case Actions.TurnRight:
+			{
+				TurnRight(aspect);
+				break;
 			}
 		}
 	}
 
-	public partial struct PlayerOrientationJob : IJobEntity
-	{
-		private void Execute(PlayerAspect aspect)
-		{
-			var action = aspect.GetAction();
-			if (action == Actions.None)
-				return;
-			
-			aspect.SetAction(Actions.None);
-
-			switch (action)
-			{
-				case Actions.Move:
-				{
-					var newTile = aspect.GetForwardTile();
-					if (!aspect.CanMove(newTile))
-						return;
-
-					var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x,
-						aspect.GetCoordinates().y);
-					oldTile.Exit();
-
-					newTile.Enter(Tile.CreatureType.Hamster);
-					aspect.SetCoordinates(newTile.Coordinates);
-					aspect.SetTargetPosition(newTile.Center);
-					break;
-				}
-				case Actions.TurnLeft:
-				{
-					TurnLeft(aspect);
-					break;
-				}
-    
-				case Actions.TurnRight:
-				{
-					TurnRight(aspect);
-					break;
-				}
-			}
-		}
-	}
-	
 	public partial struct SnakeHeadOrientationJob : IJobEntity
 	{
 		private void Execute(SnakeHeadAspect headAspect)
@@ -111,7 +75,7 @@ partial struct OrientationSystem : ISystem
 			var action = headAspect.GetAction();
 			if (action == Actions.None)
 				return;
-			
+
 			headAspect.SetAction(Actions.None);
 			headAspect.SetActiveAction(action);
 
@@ -120,7 +84,7 @@ partial struct OrientationSystem : ISystem
 				case Actions.Move:
 				{
 					var newTile = headAspect.GetForwardTile();
-					var oldTile = TilesSpawnSystem.GetTile(headAspect.GetCoordinates().x, 
+					var oldTile = TilesSpawnSystem.GetTile(headAspect.GetCoordinates().x,
 						headAspect.GetCoordinates().y);
 					oldTile.Exit();
 					newTile.Enter(Tile.CreatureType.Snake);
@@ -133,7 +97,7 @@ partial struct OrientationSystem : ISystem
 					TurnLeft(headAspect);
 					break;
 				}
-    
+
 				case Actions.TurnRight:
 				{
 					TurnRight(headAspect);
@@ -142,7 +106,7 @@ partial struct OrientationSystem : ISystem
 			}
 		}
 	}
-	
+
 	public partial struct SnakeBodyOrientationJob : IJobEntity
 	{
 		private void Execute(SnakeBodyAspect aspect)
@@ -201,4 +165,5 @@ partial struct OrientationSystem : ISystem
 		aspect.SetTargetRotation(newRotation);
 		aspect.SetOrientation(newOrientation);
 	}
+	
 }

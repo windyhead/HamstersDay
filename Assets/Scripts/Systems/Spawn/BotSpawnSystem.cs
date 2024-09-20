@@ -42,7 +42,7 @@ partial struct BotSpawnSystem : ISystem
 				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
 				var randomComponent = new RandomComponent() { Value = random };
 				ECB.AddComponent(newHamster, randomComponent);
-				ECB.AddComponent(newHamster,new HamsterTag());
+				ECB.AddComponent(newHamster,new HamsterComponent {Fat = 1});
 				ECB.AddComponent(newHamster,new BotComponent());
 				var actionComponent = new ActionComponent() { CurrentAction = Actions.None };
 				ECB.AddComponent<ActionComponent>(newHamster,actionComponent);

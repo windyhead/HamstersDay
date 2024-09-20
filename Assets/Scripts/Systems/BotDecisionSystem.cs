@@ -38,12 +38,7 @@ partial struct BotDecisionSystem : ISystem
 			if (canMoveForward)
 			{
 				if (random <= 8)
-				{
 					aspect.SetAction(Actions.Move);
-					var tile = aspect.GetForwardTile();
-					tile.Enter(Tile.CreatureType.Hamster);
-				}
-
 			}
 			else if(canMoveLeft && !canMoveRight)
 			{

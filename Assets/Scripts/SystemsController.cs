@@ -80,6 +80,9 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var destroy= HamsterWorld.GetOrCreateSystem(typeof(BotDestroySystem));
 		simulationSystemGroup.AddSystemToUpdateList(destroy);
 		
+		var disable = HamsterWorld.GetOrCreateSystem(typeof(BotDisableSystem));
+		simulationSystemGroup.AddSystemToUpdateList(disable);
+		
 		var transformSystemGroup = HamsterWorld.GetOrCreateSystemManaged<TransformSystemGroup>();
 		
 		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));

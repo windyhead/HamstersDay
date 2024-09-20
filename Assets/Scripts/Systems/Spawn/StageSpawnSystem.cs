@@ -20,9 +20,7 @@ partial struct StageSpawnSystem : ISystem
 	}
 
 	[BurstCompile]
-	public void OnDestroy(ref SystemState state)
-	{
-	}
+	public void OnDestroy(ref SystemState state) { }
 
 	public void OnUpdate(ref SystemState state)
 	{

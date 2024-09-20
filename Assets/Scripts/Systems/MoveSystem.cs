@@ -42,7 +42,7 @@ partial struct MoveSystem : ISystem
 	public partial struct MoveJob : IJobEntity
 	{
 		public float Time;
-		private void Execute(in HamsterTag hamsterTag, ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref MoveComponent moveComponent)
+		private void Execute(in HamsterComponent hamsterComponent, ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref MoveComponent moveComponent)
 		{
 			if(moveComponent.MoveFinished)
 				return;

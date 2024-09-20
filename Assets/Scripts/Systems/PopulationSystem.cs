@@ -14,13 +14,13 @@ partial class PopulationSystem : SystemBase
 	protected override void OnStartRunning()
 	{
 		TurnSystem.OnTurnFinished += IncreasePopulation;
-		BotDestroySystem.OnBorDestroyed += LowerPopulation;
+		BotDestroySystem.OnBotDestroyed += LowerPopulation;
 	}
 	
 	protected override void OnStopRunning()
 	{
 		TurnSystem.OnTurnFinished -= IncreasePopulation;
-		BotDestroySystem.OnBorDestroyed -= LowerPopulation;
+		BotDestroySystem.OnBotDestroyed -= LowerPopulation;
 	}
 	
 	public static void SetStartingPopulation()
