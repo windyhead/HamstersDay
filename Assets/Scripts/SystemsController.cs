@@ -80,6 +80,9 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var destroy= HamsterWorld.GetOrCreateSystem(typeof(BotDestroySystem));
 		simulationSystemGroup.AddSystemToUpdateList(destroy);
 		
+		var disable = HamsterWorld.GetOrCreateSystem(typeof(BotDisableSystem));
+		simulationSystemGroup.AddSystemToUpdateList(disable);
+		
 		var transformSystemGroup = HamsterWorld.GetOrCreateSystemManaged<TransformSystemGroup>();
 		
 		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));
@@ -117,7 +120,6 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		
 		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
 		DestroyTerrain();
-		DestroyBots();
 		DestroySnake();
 		
 		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerResetSystem));
@@ -125,6 +127,15 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		
 		var terrainSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
 		terrainSpawn.Update(HamsterWorld.Unmanaged);
+		
+		var botEnable = HamsterWorld.GetOrCreateSystem(typeof(BotEnableSystem));
+		botEnable.Update(HamsterWorld.Unmanaged);
+		
+		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatIncreaseSystem));
+		fatIncrease.Update(HamsterWorld.Unmanaged);
+		
+		var botReset = HamsterWorld.GetOrCreateSystem(typeof(BotResetSystem));
+		botReset.Update(HamsterWorld.Unmanaged);
 		
 		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
 		botSpawn.Update(HamsterWorld.Unmanaged);

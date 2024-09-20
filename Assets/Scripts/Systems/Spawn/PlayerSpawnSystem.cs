@@ -35,7 +35,7 @@ partial struct PlayerSpawnSystem : ISystem
 			var newHamster = ECB.Instantiate(aspect.HamsterEntity);
 			ECB.SetName(newHamster,"Player");
 			ECB.AddComponent<PlayerComponent>(newHamster);
-			ECB.AddComponent(newHamster,new HamsterTag());
+			ECB.AddComponent(newHamster,new HamsterComponent {Fat = 1});
 			var actionComponent = new ActionComponent() { CurrentAction = Actions.None };
 			ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
 			var tile = TilesSpawnSystem.GetTile(aspect.PlayerPosition.x, aspect.PlayerPosition.y);

@@ -25,7 +25,7 @@ partial struct RotationSystem : ISystem
 	public partial struct RotationJob : IJobEntity
 	{
 		public float Time;
-		private void Execute(in HamsterTag hamsterTag,ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
+		private void Execute(in HamsterComponent hamsterComponent,ref LocalTransform  transform, ref OrientationComponent orientationComponent, ref RotationComponent rotationComponent)
 		{
 			if(rotationComponent.RotationFinished)
 				return;

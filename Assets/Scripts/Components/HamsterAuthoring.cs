@@ -12,6 +12,12 @@ public class PresentationObject : IComponentData
 	public GameObject Prefab;
 }
 
+[Serializable]
+public class GameObjectReference : ICleanupComponentData
+{
+	public GameObject MainObject;
+}
+
 public class MeshRendererReference : IComponentData
 {
 	public MeshRendererReferenceMono MeshRenderers;

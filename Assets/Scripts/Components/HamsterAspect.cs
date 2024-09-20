@@ -2,22 +2,17 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
-public readonly partial struct BotAspect : IAspect, ICreature
+public readonly partial struct HamsterAspect : IAspect, ICreature
 {
-	private readonly RefRO<BotComponent> botComponent;
+	private readonly RefRO<HamsterComponent> hamsterComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
-	private readonly RefRW<RandomComponent> randomComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
-
-	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
-
-	public Random Random => randomComponent.ValueRW.Value;
-
+	
+	public int Fat => hamsterComponent.ValueRO.Fat;
 	public Actions GetAction()
 	{
 		return actionComponent.ValueRW.CurrentAction;
@@ -32,6 +27,13 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	{
 		return orientationComponent.ValueRW.CurrentOrientation;
 	}
+
+	public Tile GetForwardTile()
+	{
+		return orientationComponent.ValueRW.GetForwardTile();
+	}
+
+	public OrientationComponent OrientationComponent => orientationComponent.ValueRW;
 	
 	public void SetNewOrientation(Orientation orientation,Tile tile)
 	{
@@ -42,16 +44,13 @@ public readonly partial struct BotAspect : IAspect, ICreature
 			
 		};
 	}
-
-	public Tile GetForwardTile()
-	{
-		return orientationComponent.ValueRW.GetForwardTile();
-	}
 	
 	public void SetOrientation(Orientation orientation)
 	{
 		orientationComponent.ValueRW.CurrentOrientation = orientation;
 	}
+	
+	public Orientation GetOrientation => orientationComponent.ValueRW.CurrentOrientation;
 	
 	public void SetCoordinates(int2 coordinates)
 	{
@@ -62,14 +61,12 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	{
 		return orientationComponent.ValueRW.CurrentTileCoordinates;
 	}
-	
 
 	public void  SetTargetPosition(float3 target)
 	{
 		moveComponent.ValueRW.TargetPosition = target;
 		moveComponent.ValueRW.MoveFinished = false;
 	}
-	
 	
 	public void  SetTargetRotation(Quaternion target)
 	{
@@ -81,38 +78,17 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	{
 		transformComponent.ValueRW = new LocalTransform { Position = tile.Center, Scale = 3, Rotation = GetRotation() };
 	}
-
 	
-	public bool OnFinalTile => TilesSpawnSystem.isFinalTile(orientationComponent.ValueRO.CurrentTileCoordinates);
-	
-	public bool CanMoveForward()
-	{
-		var tile = orientationComponent.ValueRW.GetForwardTile();
-		return CanMove(tile);
-	}
-	
-	public bool CanMoveLeft()
-	{
-		var tile = orientationComponent.ValueRW.GetLeftTile();
-		return CanMove(tile);
-	}
-	
-	public bool CanMoveRight()
-	{
-		var tile = orientationComponent.ValueRW.GetRightTile();
-		return CanMove(tile);
-	}
-
 	public bool CanMove(Tile tile)
 	{
-		if (tile == null || tile.Creature != Tile.CreatureType.None
-		                 || tile.Type == Tile.TileType.Rocks) 
+		if (tile == null || tile.Creature != Tile.CreatureType.None 
+		                 || tile.Type == Tile.TileType.Rocks)
 			return false;
 		return true;
 	}
+	
 	private Quaternion GetRotation()
 	{
 		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);
 	}
-
 }

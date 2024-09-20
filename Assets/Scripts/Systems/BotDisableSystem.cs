@@ -1,14 +1,11 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(SnakeElementSystem))]
-public partial struct BotDestroySystem : ISystem
+[UpdateAfter(typeof(BotDestroySystem))]
+public partial struct BotDisableSystem : ISystem
 {
-	public static Action<int> OnBotDestroyed;
-
 	public void OnCreate(ref SystemState state) { }
 
 	public void OnDestroy(ref SystemState state) { }
@@ -20,13 +17,15 @@ public partial struct BotDestroySystem : ISystem
 		
 		var buffer = new EntityCommandBuffer(Allocator.Temp);
 
-		foreach (var (aspect, entity) in SystemAPI.Query<BotAspect>().WithEntityAccess())
+		foreach (var (aspect, gameObjectReference, entity) in SystemAPI.Query<BotAspect, GameObjectReference>()
+			         .WithEntityAccess())
 		{
 			var currentTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x, aspect.GetCoordinates().y);
-			if (currentTile.Creature == Tile.CreatureType.Snake)
+			if (aspect.OnFinalTile)
 			{
-				buffer.DestroyEntity(entity);
-				OnBotDestroyed?.Invoke(1);
+				gameObjectReference.MainObject.SetActive(false);
+				currentTile.Exit();
+				buffer.AddComponent<Disabled>(entity);
 			}
 		}
 		buffer.Playback(state.EntityManager);

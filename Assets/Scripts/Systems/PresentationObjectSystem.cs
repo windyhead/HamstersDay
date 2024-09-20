@@ -25,8 +25,10 @@ public partial struct PresentationObjectSystem :ISystem
 		{
 			var newObject = GameObject.Instantiate(presentationObject.Prefab);
 			newObject.name = "HamsterPresentation";
+			buffer.AddComponent(entity,new GameObjectReference{MainObject = newObject});
 			buffer.AddComponent(entity,new AnimatorReference{ Animator = newObject.GetComponent<Animator>()});
 			buffer.AddComponent(entity,new MeshRendererReference(){ MeshRenderers = newObject.GetComponent<MeshRendererReferenceMono>()});
+			
 		}
 		
 		foreach (var (animator, transform,moveComponent,entity) in SystemAPI.Query<AnimatorReference,LocalTransform,MoveComponent>().WithEntityAccess())

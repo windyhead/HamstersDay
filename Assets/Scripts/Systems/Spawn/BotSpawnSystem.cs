@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Random = Unity.Mathematics.Random;
@@ -25,24 +27,27 @@ partial struct BotSpawnSystem : ISystem
 	{
 		var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
 		var buffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
+		var existingBotsQuery = new EntityQueryBuilder(Allocator.Temp).WithAspect<BotAspect>().Build(ref state);
+		var existingBotsCount = existingBotsQuery.CalculateEntityCount();
+		new BotSpawnSystemJob() { ECB = buffer,RandomNumber = SystemsController.RandomSeed,
+			BotCount = existingBotsCount}.Schedule();
 	}
 
 	public partial struct BotSpawnSystemJob : IJobEntity
 	{
 		public EntityCommandBuffer ECB;
-		public int RandomNumber; 
-	
+		public int RandomNumber;
+		public int BotCount;
 		private void Execute(StageSpawnerAspect aspect)
 		{
-			for (int i = 0; i < PopulationSystem.Population ; i++)
+			for (int i = 0; i < PopulationSystem.Population - BotCount ; i++)
 			{
 				var newHamster = ECB.Instantiate(aspect.HamsterEntity);
 				ECB.SetName(newHamster,"BotHamster_"+ i);
 				var random = Random.CreateFromIndex((uint)(i + RandomNumber));
 				var randomComponent = new RandomComponent() { Value = random };
 				ECB.AddComponent(newHamster, randomComponent);
-				ECB.AddComponent(newHamster,new HamsterTag());
+				ECB.AddComponent(newHamster,new HamsterComponent {Fat = 1});
 				ECB.AddComponent(newHamster,new BotComponent());
 				var actionComponent = new ActionComponent() { CurrentAction = Actions.None };
 				ECB.AddComponent<ActionComponent>(newHamster,actionComponent);
