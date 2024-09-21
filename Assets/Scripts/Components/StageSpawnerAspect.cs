@@ -13,6 +13,8 @@ public readonly partial struct StageSpawnerAspect :IAspect
     
     public Entity FlowerEntity => stageSpawner.ValueRW.FlowersPrefab;
     
+    public Entity NutEntity => stageSpawner.ValueRW.NutPrefab;
+    
     public int2 PlayerPosition => stageSpawner.ValueRO.PlayerPosition;
 
     public Orientation PlayerOrientation => stageSpawner.ValueRO.PlayerOrientation;

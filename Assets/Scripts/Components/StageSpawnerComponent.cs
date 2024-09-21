@@ -8,6 +8,7 @@ using Unity.Mathematics;
 		public Entity CelestialGate;
 		public Entity StonePrefab;
 		public Entity FlowersPrefab;
+		public Entity NutPrefab;
 		public int2 PlayerPosition;
 		public Orientation PlayerOrientation;
 		public int2 HousePosition;

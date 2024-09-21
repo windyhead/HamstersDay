@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -220,10 +220,13 @@ MonoBehaviour:
     type: 3}
   HousePrefab: {fileID: 5968063767119423112, guid: f5b08780a98c8234eb97a51e3ed5f470,
     type: 3}
-  GatePrefab: {fileID: 0}
+  GatePrefab: {fileID: 2943141955409483336, guid: 9147a25df378ee444837dfcf1deb6918,
+    type: 3}
   StonePrefab: {fileID: 2530229983680823798, guid: c056dd1e10103424c82e80acac9560fd,
     type: 3}
   FlowersPrefab: {fileID: 2530229983680823798, guid: 0d30e543cf9bb874b960f609dccdf567,
+    type: 3}
+  NutPrefab: {fileID: 2943141955409483336, guid: 9147a25df378ee444837dfcf1deb6918,
     type: 3}
   PlayerPosition:
     x: 0

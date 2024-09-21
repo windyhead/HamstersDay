@@ -24,6 +24,11 @@ public class MeshRendererReference : IComponentData
 
 }
 
+public class HamsterVisualReference : IComponentData
+{
+	public HamsterVisualReferenceMono VisualReference;
+}
+
 [Serializable]
 public class AnimatorReference : ICleanupComponentData
 {
