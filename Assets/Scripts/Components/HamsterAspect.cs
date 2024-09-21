@@ -5,14 +5,27 @@ using UnityEngine;
 
 public readonly partial struct HamsterAspect : IAspect, ICreature
 {
-	private readonly RefRO<HamsterComponent> hamsterComponent;
+	private readonly RefRW<HamsterComponent> hamsterComponent;
 	private readonly RefRW<ActionComponent> actionComponent;
 	private readonly RefRW<OrientationComponent> orientationComponent;
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
 	
-	public int Fat => hamsterComponent.ValueRO.Fat;
+	public int Fat => hamsterComponent.ValueRW.Fat;
+	
+	public void IncreaseFat()
+	{
+		hamsterComponent.ValueRW.Fat++;
+	}
+	
+	public int Nuts => hamsterComponent.ValueRW.Nuts;
+
+	public void TakeNut()
+	{
+		hamsterComponent.ValueRW.Nuts++;
+	}
+	
 	public Actions GetAction()
 	{
 		return actionComponent.ValueRW.CurrentAction;

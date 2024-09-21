@@ -6,9 +6,10 @@ public class StageSpawnerAuthoring : MonoBehaviour
 {
 	public GameObject HamsterPrefab;
 	public GameObject HousePrefab;
-	public GameObject GatePrefab;
+	//public GameObject GatePrefab;
 	public GameObject StonePrefab;
 	public GameObject FlowersPrefab;
+	public GameObject NutPrefab;
 	
 	public int2 PlayerPosition;
 	public Orientation PlayerOrientation;
@@ -27,9 +28,10 @@ class StageSpawnerBaker : Baker<StageSpawnerAuthoring>
 		{
 			HamsterPrefab = GetEntity(authoring.HamsterPrefab),
 			HousePrefab = GetEntity(authoring.HousePrefab),
-			CelestialGate = GetEntity(authoring.GatePrefab),
+			//CelestialGate = GetEntity(authoring.GatePrefab),
 			StonePrefab = GetEntity(authoring.StonePrefab),
 			FlowersPrefab = GetEntity(authoring.FlowersPrefab),
+			NutPrefab = GetEntity(authoring.NutPrefab),
 			PlayerPosition = authoring.PlayerPosition,
 			PlayerOrientation = authoring.PlayerOrientation,
 			HousePosition = authoring.HousePosition,

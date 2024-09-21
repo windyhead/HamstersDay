@@ -28,7 +28,7 @@ public partial struct PresentationObjectSystem :ISystem
 			buffer.AddComponent(entity,new GameObjectReference{MainObject = newObject});
 			buffer.AddComponent(entity,new AnimatorReference{ Animator = newObject.GetComponent<Animator>()});
 			buffer.AddComponent(entity,new MeshRendererReference(){ MeshRenderers = newObject.GetComponent<MeshRendererReferenceMono>()});
-			
+			buffer.AddComponent(entity, new HamsterVisualReference(){VisualReference =  newObject.GetComponent<HamsterVisualReferenceMono>()});
 		}
 		
 		foreach (var (animator, transform,moveComponent,entity) in SystemAPI.Query<AnimatorReference,LocalTransform,MoveComponent>().WithEntityAccess())

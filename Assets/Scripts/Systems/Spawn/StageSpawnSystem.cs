@@ -29,6 +29,7 @@ partial struct StageSpawnSystem : ISystem
 		new HouseSpawnSystemJob(){ECB = buffer}.Schedule();
 		new StoneSpawnSystemJob(){ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
 		new FlowersSpawnSystemJob(){ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
+		new NutsSpawnSystemJob(){ECB = buffer,RandomNumber = SystemsController.RandomSeed}.Schedule();
 	}
 	
 	public partial struct HouseSpawnSystemJob : IJobEntity
@@ -96,6 +97,31 @@ partial struct StageSpawnSystem : ISystem
 				var orientation = (Orientation)randomOrientationNumber;
 				var rotation = OrientationComponent.GetRotationByOrientation(orientation);
 				ECB.SetComponent(flowers,
+					new LocalTransform { Position = tile.Center, Scale = 1, Rotation = rotation });
+			}
+		}
+	}
+	
+	public partial struct NutsSpawnSystemJob : IJobEntity
+	{
+		public EntityCommandBuffer ECB;
+		public int RandomNumber; 
+		
+		private void Execute(StageSpawnerAspect aspect)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				var nut = ECB.Instantiate(aspect.NutEntity);
+				ECB.SetName(nut, "NUT");
+				var random = Random.CreateFromIndex((uint)(RandomNumber + i));
+				var tile = TilesSpawnSystem.GetRandomTile(random,true);
+				ECB.AddComponent(nut, new NutComponent(){CurrentTileCoordinates = tile.Coordinates});
+				tile.SetType(Tile.TileType.Plains);
+				tile.AddNut();
+				var randomOrientationNumber = random.NextInt(0, Enum.GetValues(typeof(Orientation)).Length);
+				var orientation = (Orientation)randomOrientationNumber;
+				var rotation = OrientationComponent.GetRotationByOrientation(orientation);
+				ECB.SetComponent(nut,
 					new LocalTransform { Position = tile.Center, Scale = 1, Rotation = rotation });
 			}
 		}

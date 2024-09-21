@@ -11,7 +11,8 @@ public class Tile
 	public bool IsFinal => 	Coordinates.x + 1 == TilesSpawnSystem.Rows &&
 	                        Coordinates.y + 1 == TilesSpawnSystem.Columns;
 
-	
+	public bool HasNut { get; private set; }
+
 	public enum TileType
 	{
 		Plains,
@@ -51,9 +52,20 @@ public class Tile
 	{
 		Type = newType;
 	}
+	
+	public void AddNut()
+	{
+		HasNut = true;
+	}
+	
+	public void RemoveNut()
+	{
+		HasNut = false;
+	}
 
 	public void Reset()
 	{
+		HasNut = false;
 		Type = TileType.Plains; 
 		Exit();
 	}

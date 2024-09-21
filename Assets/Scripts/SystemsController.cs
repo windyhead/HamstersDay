@@ -83,6 +83,9 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var disable = HamsterWorld.GetOrCreateSystem(typeof(BotDisableSystem));
 		simulationSystemGroup.AddSystemToUpdateList(disable);
 		
+		var pickNut = HamsterWorld.GetOrCreateSystem(typeof(PickUpNutSystem));
+		simulationSystemGroup.AddSystemToUpdateList(pickNut);
+		
 		var transformSystemGroup = HamsterWorld.GetOrCreateSystemManaged<TransformSystemGroup>();
 		
 		var moveSystem = HamsterWorld.GetOrCreateSystem(typeof(MoveSystem));
