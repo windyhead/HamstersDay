@@ -1,5 +1,7 @@
+using System;
 using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class SystemsController : SingletonBehaviour<SystemsController>
@@ -134,7 +136,7 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var botEnable = HamsterWorld.GetOrCreateSystem(typeof(BotEnableSystem));
 		botEnable.Update(HamsterWorld.Unmanaged);
 		
-		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatIncreaseSystem));
+		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatSystem));
 		fatIncrease.Update(HamsterWorld.Unmanaged);
 		
 		var botReset = HamsterWorld.GetOrCreateSystem(typeof(BotResetSystem));
@@ -152,6 +154,8 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 
 	private void ResetGame()
 	{
+		FatSystem.ResetPlayer(HamsterWorld);
+		DestroyBots();
 		PopulationSystem.SetStartingPopulation();
 		SnakeSpawnSystem.Reset();
 		GameOverSystem.Reset();
