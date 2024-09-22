@@ -27,24 +27,21 @@ public partial class PickUpNutSystem : SystemBase
 	}
 	
 	public partial struct PickNutJob : IJobEntity {
-		private void Execute(HamsterAspect hamsterAspect, HamsterVisualReference visualReference)
-		{
-			var currentTile = TilesSpawnSystem.GetTile(hamsterAspect.GetCoordinates().x, hamsterAspect.GetCoordinates().y);
-			if (currentTile.HasNut)
-			{
-				if(hamsterAspect.Nuts >= 2)
-					return;
-					
-				currentTile.RemoveNut();
-				// aspect.IncreaseFat();
-				// var fatIndex = aspect.Fat / 10;
-				// visualReference.VisualReference.Body.localScale = Vector3.one + new Vector3(fatIndex, 0, fatIndex);
-				hamsterAspect.TakeNut();
-				if (hamsterAspect.Nuts == 1)
-					visualReference.VisualReference.RightCheek.gameObject.SetActive(true);
-				else if(hamsterAspect.Nuts == 2)
-					visualReference.VisualReference.LeftCheek.gameObject.SetActive(true);
-			}
-		}
-	}
+     		private void Execute(HamsterAspect hamsterAspect, HamsterVisualReference visualReference)
+     		{
+     			var currentTile = TilesSpawnSystem.GetTile(hamsterAspect.GetCoordinates().x, hamsterAspect.GetCoordinates().y);
+     			if (currentTile.HasNut)
+     			{
+     				if(hamsterAspect.Nuts >= 2)
+     					return;
+     					
+     				currentTile.RemoveNut();
+     				hamsterAspect.TakeNut();
+     				if (hamsterAspect.Nuts == 1)
+     					visualReference.VisualReference.RightCheek.gameObject.SetActive(true);
+     				else if(hamsterAspect.Nuts == 2)
+     					visualReference.VisualReference.LeftCheek.gameObject.SetActive(true);
+     			}
+     		}
+     	}
 }

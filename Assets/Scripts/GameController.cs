@@ -97,7 +97,14 @@ public class GameController : SingletonBehaviour<GameController>
 	private void ResetGame()
 	{
 		CurrentStage = 1;
-		ResetStage();
 		OnGameReset?.Invoke();
+		ResetStage();
 	}
+	
+	private void Update()
+	{
+		if(Input.GetKeyDown(KeyCode.X))
+			ResetGame();
+	}
+
 }

@@ -5,7 +5,7 @@ using Unity.Entities;
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-[UpdateAfter(typeof(FatIncreaseSystem))]
+[UpdateAfter(typeof(FatSystem))]
 partial struct BotResetSystem : ISystem
 {
 	[BurstCompile]

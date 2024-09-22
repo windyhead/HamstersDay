@@ -36,7 +36,7 @@ partial class PopulationSystem : SystemBase
 	private void IncreasePopulation(int i)
 	{
 		populationCounter ++;
-		if (populationCounter == 5)
+		if (populationCounter == 10)
 		{
 			Population++;
 			ResetPopulationCounter();
