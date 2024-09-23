@@ -12,6 +12,7 @@ public class Tile
 	                        Coordinates.y + 1 == TilesSpawnSystem.Columns;
 
 	public bool HasNut { get; private set; }
+	public int Nuts { get; private set; }
 
 	public enum TileType
 	{
@@ -56,16 +57,19 @@ public class Tile
 	public void AddNut()
 	{
 		HasNut = true;
+		Nuts++;
 	}
 	
-	public void RemoveNut()
+	public void RemoveNuts()
 	{
 		HasNut = false;
+		Nuts = 0;
 	}
 
 	public void Reset()
 	{
 		HasNut = false;
+		Nuts = 0;
 		Type = TileType.Plains; 
 		Exit();
 	}

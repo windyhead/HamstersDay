@@ -10,6 +10,9 @@ using UnityEngine;
 
 partial struct RotationSystem : ISystem
 {
+	private static readonly float NormalRotationSpeed = 130f;
+	private static readonly float AlarmRotationSpeed = 260f;
+	private static readonly float RotationMargin = 0.01f;
 	public void OnCreate(ref SystemState state) { }
 
 	public void OnDestroy(ref SystemState state) { }
@@ -31,10 +34,10 @@ partial struct RotationSystem : ISystem
 				return;
 
 			var angle = math.angle(rotationComponent.TargetRotation, transform.Rotation);
-			if (angle <= 0.05)
+			if (angle <= RotationMargin)
 				rotationComponent.RotationFinished = true;
 			
-			var speed = SnakeSpawnSystem.IsSnakeSpawned ? 250 : 120;
+			var speed = SnakeSpawnSystem.IsSnakeSpawned ? AlarmRotationSpeed : NormalRotationSpeed;
 			if (!rotationComponent.RotationFinished)
 				transform.Rotation = Quaternion.RotateTowards(transform.Rotation,rotationComponent.TargetRotation,speed * Time);
 		}
@@ -61,7 +64,7 @@ partial struct RotationSystem : ISystem
 				return;
 
 			var angle = math.angle(rotationComponent.TargetRotation, transform.Rotation);
-			if (angle <= 0.05)
+			if (angle <= RotationMargin)
 				rotationComponent.RotationFinished = true;
 			
 			if (!rotationComponent.RotationFinished)

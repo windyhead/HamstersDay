@@ -8,11 +8,12 @@ using UnityEngine;
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-[UpdateAfter(typeof(BotEnableSystem))]
+[UpdateAfter(typeof(FatResetSystem))]
 partial struct FatSystem : ISystem
 {
+	public static Action<int> OnPlayerFatIncreased;
+	private static readonly float SizeIncreaseIndex = 0.03f;
 
-	public static Action <int> OnPlayerFatIncreased;
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
@@ -24,32 +25,24 @@ partial struct FatSystem : ISystem
 
 	public void OnUpdate(ref SystemState state)
 	{
-		new FatJob().Run();
-		var playerQuery = new EntityQueryBuilder(Allocator.Temp).WithAspect<PlayerAspect>().WithAll<HamsterComponent>().Build(ref state);
-		var playerComponent = playerQuery.ToComponentDataArray<HamsterComponent>(Allocator.Temp).First();
-		OnPlayerFatIncreased.Invoke(playerComponent.Fat);
-	}
-	
-	public partial struct FatJob : IJobEntity
-	{
-		private void Execute(ref HamsterComponent hamsterComponent, HamsterVisualReference visualReference)
+		foreach (var (hamsterComponent, visualReference) in SystemAPI.Query<RefRW<HamsterComponent>,HamsterVisualReference>())
 		{
-			hamsterComponent.Fat += hamsterComponent.Nuts;
-			hamsterComponent.Nuts = 0;
-			float fatIndex = hamsterComponent.Fat * 0.03f ;
+			var nuts = hamsterComponent.ValueRO.Nuts;
+			if (nuts == 0 && hamsterComponent.ValueRO.Fat > 1)
+				hamsterComponent.ValueRW.Fat --;
+			else 
+				hamsterComponent.ValueRW.Fat += nuts;
+			
+			hamsterComponent.ValueRW.Nuts = 0;
+			float fatIndex = hamsterComponent.ValueRO.Fat * SizeIncreaseIndex;
 			visualReference.VisualReference.Body.localScale = Vector3.one + new Vector3(fatIndex, 0, fatIndex);
 			visualReference.VisualReference.LeftCheek.gameObject.SetActive(false);
 			visualReference.VisualReference.RightCheek.gameObject.SetActive(false);
 		}
-	}
-	public static void ResetPlayer(World world)
-	{
-		var playerQuery = new EntityQueryBuilder(Allocator.Temp).WithAspect<PlayerAspect>().
-			WithAll<HamsterComponent>().Build(world.EntityManager);
-		var hamsterComponent = playerQuery.ToComponentDataArray<HamsterComponent>(Allocator.Temp).First();
-		hamsterComponent.Fat = 0;
-		hamsterComponent.Nuts = 0;
-		playerQuery.Dispose();
-		OnPlayerFatIncreased.Invoke(hamsterComponent.Fat);
+		
+		var playerQuery = new EntityQueryBuilder(Allocator.Temp).WithAspect<PlayerAspect>().WithAll<HamsterComponent>()
+			.Build(ref state);
+		var playerComponent = playerQuery.ToComponentDataArray<HamsterComponent>(Allocator.Temp).First();
+		OnPlayerFatIncreased.Invoke(playerComponent.Fat);
 	}
 }

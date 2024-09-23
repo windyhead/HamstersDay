@@ -12,15 +12,11 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 	private void Awake()
 	{
 		GameController.OnEntitySceneLoaded += SetWorld;
-		GameController.OnStageChanged += ResetStage;
-		GameController.OnGameReset += ResetGame;
 	}
 	
 	private void OnDestroy()
 	{
 		GameController.OnEntitySceneLoaded -= SetWorld;
-		GameController.OnStageChanged -= ResetStage;
-		GameController.OnGameReset -= ResetGame;
 		World.DisposeAllWorlds();
 	}
 
@@ -30,6 +26,52 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		PopulationSystem.SetStartingPopulation();
 		SetStage();
 		SetSystems();
+		GameOverSystem.Reset();
+	}
+	
+	public void ResetStage()
+	{
+		PopulationSystem.ResetPopulationCounter();
+		
+		RandomSeed = Random.Range(1, 101);
+		TilesSpawnSystem.ResetTiles();
+		
+		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
+		DestroyTerrain();
+		DestroySnake();
+		
+		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerOrientationResetSystem));
+		playerReset.Update(HamsterWorld.Unmanaged);
+		
+		var terrainSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
+		terrainSpawn.Update(HamsterWorld.Unmanaged);
+		
+		var botEnable = HamsterWorld.GetOrCreateSystem(typeof(BotEnableSystem));
+		botEnable.Update(HamsterWorld.Unmanaged);
+		
+		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatSystem));
+		fatIncrease.Update(HamsterWorld.Unmanaged);
+		
+		var botReset = HamsterWorld.GetOrCreateSystem(typeof(BotResetSystem));
+		botReset.Update(HamsterWorld.Unmanaged);
+		
+		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
+		botSpawn.Update(HamsterWorld.Unmanaged);
+
+		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
+		ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
+		state.Enabled = true;
+		
+		TurnSystem.ResetTimer();
+	}
+	public void ResetGame()
+	{
+		var fatReset = HamsterWorld.GetOrCreateSystem(typeof(FatResetSystem));
+		fatReset.Update(HamsterWorld.Unmanaged);
+		DestroyBots();
+		PopulationSystem.SetStartingPopulation();
+		SnakeSpawnSystem.Reset();
+		GameOverSystem.Reset();
 	}
 
 	private void SetStage()
@@ -114,51 +156,6 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		SystemState state = HamsterWorld.Unmanaged.ResolveSystemStateRef(stageComplete);
 		CompleteStageSystem.ResetStage();
 		state.Enabled = true;
-	}
-
-	private void ResetStage(int obj)
-	{
-		PopulationSystem.ResetPopulationCounter();
-		
-		RandomSeed = Random.Range(1, 101);
-		TilesSpawnSystem.ResetTiles();
-		
-		HamsterWorld.EntityManager.CompleteAllTrackedJobs();
-		DestroyTerrain();
-		DestroySnake();
-		
-		var playerReset = HamsterWorld.GetOrCreateSystem(typeof(PlayerResetSystem));
-		playerReset.Update(HamsterWorld.Unmanaged);
-		
-		var terrainSpawn = HamsterWorld.GetOrCreateSystem(typeof(StageSpawnSystem));
-		terrainSpawn.Update(HamsterWorld.Unmanaged);
-		
-		var botEnable = HamsterWorld.GetOrCreateSystem(typeof(BotEnableSystem));
-		botEnable.Update(HamsterWorld.Unmanaged);
-		
-		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatSystem));
-		fatIncrease.Update(HamsterWorld.Unmanaged);
-		
-		var botReset = HamsterWorld.GetOrCreateSystem(typeof(BotResetSystem));
-		botReset.Update(HamsterWorld.Unmanaged);
-		
-		var botSpawn = HamsterWorld.GetOrCreateSystem(typeof(BotSpawnSystem));
-		botSpawn.Update(HamsterWorld.Unmanaged);
-
-		var complete = HamsterWorld.GetExistingSystem<CompleteStageSystem>();
-		ref SystemState state = ref HamsterWorld.Unmanaged.ResolveSystemStateRef(complete);
-		state.Enabled = true;
-		
-		TurnSystem.ResetTimer();
-	}
-
-	private void ResetGame()
-	{
-		FatSystem.ResetPlayer(HamsterWorld);
-		DestroyBots();
-		PopulationSystem.SetStartingPopulation();
-		SnakeSpawnSystem.Reset();
-		GameOverSystem.Reset();
 	}
 	
 	private void DestroyTerrain()

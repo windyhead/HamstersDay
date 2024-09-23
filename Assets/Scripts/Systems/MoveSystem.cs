@@ -9,6 +9,9 @@ using Unity.Transforms;
 
 partial struct MoveSystem : ISystem
 {
+	private static readonly float NormalSpeed = 14f;
+	private static readonly float AlarmSpeed = 25f;
+	private static readonly float SnakeSpeed = 40f;
 	public void OnCreate(ref SystemState state) { }
 
 	public void OnDestroy(ref SystemState state) { }
@@ -35,7 +38,7 @@ partial struct MoveSystem : ISystem
 			var direction = math.normalize(moveComponent.TargetPosition - transform.Position);
 
 			if (!moveComponent.MoveFinished)
-				transform.Position +=  direction * 40 * Time;
+				transform.Position +=  direction * SnakeSpeed * Time;
 		}
 	}
 
@@ -53,7 +56,7 @@ partial struct MoveSystem : ISystem
 			
 			var direction = math.normalize(moveComponent.TargetPosition - transform.Position);
 
-			var speed = SnakeSpawnSystem.IsSnakeSpawned ?  20 : 12;
+			var speed = SnakeSpawnSystem.IsSnakeSpawned ?  AlarmSpeed : NormalSpeed;
 			if (!moveComponent.MoveFinished)
 				transform.Position +=  direction * speed * Time;
 		}

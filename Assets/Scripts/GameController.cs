@@ -19,6 +19,7 @@ public class GameController : SingletonBehaviour<GameController>
 	public static PlayerInputSettings PlayerInputSettings { get; private set;}
 
 	public static int CurrentStage { get; private set; } = 1;
+	public static int PlayersFat { get; private set; } = 1;
 	
 	public int StartingPopulation => startingPopulation;
 
@@ -37,6 +38,12 @@ public class GameController : SingletonBehaviour<GameController>
 		UIController.OnStartGamePressed += StartGame;
 		UIController.OnResetPressed += ResetGame;
 		UIController.OnQuitPressed += QuitGame;
+		FatSystem.OnPlayerFatIncreased += SetPlayersFat;
+	}
+
+	private void SetPlayersFat(int fat)
+	{
+		PlayersFat = fat;
 	}
 
 	private void StartGame()
@@ -51,6 +58,7 @@ public class GameController : SingletonBehaviour<GameController>
 		UIController.OnStartGamePressed -= StartGame;
 		UIController.OnResetPressed -= ResetGame;
 		UIController.OnQuitPressed -= QuitGame;
+		FatSystem.OnPlayerFatIncreased -= SetPlayersFat;
 	}
 
 	private IEnumerator SetUpGame()
@@ -91,14 +99,17 @@ public class GameController : SingletonBehaviour<GameController>
 	private void ResetStage()
 	{
 		OnStageChanged?.Invoke(CurrentStage);
+		SystemsController.Instance.ResetStage();
 		OnPopulationChanged?.Invoke();
 	}
 
 	private void ResetGame()
 	{
 		CurrentStage = 1;
-		OnGameReset?.Invoke();
+		PlayersFat = 1;
+		SystemsController.Instance.ResetGame();
 		ResetStage();
+		OnGameReset?.Invoke();
 	}
 	
 	private void Update()
@@ -106,5 +117,4 @@ public class GameController : SingletonBehaviour<GameController>
 		if(Input.GetKeyDown(KeyCode.X))
 			ResetGame();
 	}
-
 }

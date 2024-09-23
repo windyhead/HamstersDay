@@ -21,9 +21,10 @@ public readonly partial struct HamsterAspect : IAspect, ICreature
 	
 	public int Nuts => hamsterComponent.ValueRW.Nuts;
 
-	public void TakeNut()
+	public void TakeNuts(int nuts)
 	{
-		hamsterComponent.ValueRW.Nuts++;
+		nuts = math.min(nuts, 2);
+		hamsterComponent.ValueRW.Nuts += nuts;
 	}
 	
 	public Actions GetAction()
