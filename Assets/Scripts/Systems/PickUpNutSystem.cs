@@ -34,14 +34,17 @@ public partial class PickUpNutSystem : SystemBase
      			{
      				if(hamsterAspect.Nuts >= 2)
      					return;
-     					
-     				currentTile.RemoveNut();
-     				hamsterAspect.TakeNut();
+			        var nuts = currentTile.Nuts;	
+     				currentTile.RemoveNuts();
+     				hamsterAspect.TakeNuts(nuts);
      				if (hamsterAspect.Nuts == 1)
      					visualReference.VisualReference.RightCheek.gameObject.SetActive(true);
-     				else if(hamsterAspect.Nuts == 2)
-     					visualReference.VisualReference.LeftCheek.gameObject.SetActive(true);
-     			}
+     				else if (hamsterAspect.Nuts >= 2)
+			        {
+				        visualReference.VisualReference.RightCheek.gameObject.SetActive(true);
+				        visualReference.VisualReference.LeftCheek.gameObject.SetActive(true);
+			        }
+		        }
      		}
      	}
 }

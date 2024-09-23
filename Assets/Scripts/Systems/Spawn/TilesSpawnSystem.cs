@@ -64,7 +64,8 @@ partial struct TilesSpawnSystem : ISystem
 		Columns = columns;
 	}
 	
-	public static Tile GetRandomTile(Random random,bool forEnvironment = false)
+	public static Tile GetRandomTile(Random random,bool forEnvironment = false, 
+		bool forNuts = false, bool forBots = false)
 	{
 		var tileFound = false;
 		while (!tileFound)
@@ -78,6 +79,12 @@ partial struct TilesSpawnSystem : ISystem
 			var tile = GetTile(randomRow, randomColumn); 
 			
 			if(!tile.CanBeSpawnedOn())
+				continue;
+			
+			if(forNuts && tile.Nuts >=2)
+				continue;
+			
+			if(forBots && tile.HasNut)
 				continue;
 			
 			return tile;

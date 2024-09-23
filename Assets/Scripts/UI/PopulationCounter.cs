@@ -16,6 +16,7 @@ public class PopulationCounter : MonoBehaviour
     private void Awake()
     {
         GameController.OnGameStarted += SetPopulation;
+        GameController.OnPopulationChanged += SetPopulation;
         PopulationSystem.OnPopulationChanged += UpdatePopulation;
     }
 
@@ -27,6 +28,7 @@ public class PopulationCounter : MonoBehaviour
     private void OnDestroy()
     {
         PopulationSystem.OnPopulationChanged -= UpdatePopulation;
+        GameController.OnGameReset -= SetPopulation;
         GameController.OnPopulationChanged -= SetPopulation;
     }
     

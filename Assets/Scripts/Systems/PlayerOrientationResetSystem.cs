@@ -5,7 +5,7 @@ using Unity.Entities;
 [DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(TilesSpawnSystem))]
-partial struct PlayerResetSystem : ISystem
+partial struct PlayerOrientationResetSystem : ISystem
 {
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)

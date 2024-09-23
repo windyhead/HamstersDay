@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,11 +14,12 @@ public class UIController : SingletonBehaviour<UIController>
     [SerializeField] private Button restartButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private GameObject startGamePanel;
-    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject guidePanel;
+    [SerializeField] private GameOverScreen gameOverPanel;
     
     void Start()
     {
-        GameController.OnGameStarted += HideStartPanel;
+        GameController.OnGameStarted += HideGuidePanel;
         startGameButton.onClick.AddListener(StartGame);
         restartButton.onClick.AddListener(ResetGame);
         quitButton.onClick.AddListener(QuitGame);
@@ -29,23 +32,31 @@ public class UIController : SingletonBehaviour<UIController>
         restartButton.onClick.RemoveAllListeners();
         quitButton.onClick.RemoveAllListeners();
         GameOverSystem.OnGameOver -= GameOver;
-        GameController.OnGameStarted -= HideStartPanel;
+        GameController.OnGameStarted -= HideGuidePanel;
     }
     
     private void StartGame()
     {
-        startGameButton.interactable = false;
+        startGamePanel.SetActive(false);
+        //startGameButton.interactable = false;
         OnStartGamePressed?.Invoke();
     }
 
-    private void HideStartPanel()
+    private void HideGuidePanel()
     {
-        startGamePanel.SetActive(false);
+        StartCoroutine(WaitAndHideGuide());
+        //startGamePanel.SetActive(false);
+    }
+
+    private IEnumerator WaitAndHideGuide()
+    {
+        yield return new WaitForSeconds(2);
+        guidePanel.SetActive(false);
     }
 
     private void ResetGame()
     {
-        gameOverPanel.SetActive(false);
+        gameOverPanel.gameObject.SetActive(false);
         OnResetPressed?.Invoke();
     }
     
@@ -56,6 +67,7 @@ public class UIController : SingletonBehaviour<UIController>
     
     private void GameOver()
     {
-        gameOverPanel.SetActive(true);
+        gameOverPanel.Show(GameController.CurrentStage,GameController.PlayersFat);
+        gameOverPanel.gameObject.SetActive(true);
     }
 }

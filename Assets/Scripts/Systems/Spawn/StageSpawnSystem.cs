@@ -114,7 +114,7 @@ partial struct StageSpawnSystem : ISystem
 				var nut = ECB.Instantiate(aspect.NutEntity);
 				ECB.SetName(nut, "NUT");
 				var random = Random.CreateFromIndex((uint)(RandomNumber + i));
-				var tile = TilesSpawnSystem.GetRandomTile(random);
+				var tile = TilesSpawnSystem.GetRandomTile(random,forNuts:true);
 				ECB.AddComponent(nut, new NutComponent(){CurrentTileCoordinates = tile.Coordinates});
 				tile.SetType(Tile.TileType.Plains);
 				tile.AddNut();
