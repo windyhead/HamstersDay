@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FaceTex:
-        m_Texture: {fileID: 2800000, guid: 9b70400240180204da66987256bd7931, type: 3}
+        m_Texture: {fileID: 2800000, guid: f562a349500cfff4cbffc40071903dc2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -167,11 +167,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: LiberationSans  Wood
+  m_Name: LiberationSansSnake
   m_EditorClassIdentifier: 
-  hashCode: 231247347
+  hashCode: -904263504
   material: {fileID: -9084236204642225839}
-  materialHashCode: 198912371
+  materialHashCode: 4595856
   m_Version: 1.1.0
   m_SourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75,
