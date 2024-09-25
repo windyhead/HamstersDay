@@ -38,14 +38,12 @@ public class UIController : SingletonBehaviour<UIController>
     private void StartGame()
     {
         startGamePanel.SetActive(false);
-        //startGameButton.interactable = false;
         OnStartGamePressed?.Invoke();
     }
 
     private void HideGuidePanel()
     {
         StartCoroutine(WaitAndHideGuide());
-        //startGamePanel.SetActive(false);
     }
 
     private IEnumerator WaitAndHideGuide()
@@ -67,7 +65,7 @@ public class UIController : SingletonBehaviour<UIController>
     
     private void GameOver()
     {
-        gameOverPanel.Show(GameController.CurrentStage,GameController.PlayersFat);
+        gameOverPanel.Show();
         gameOverPanel.gameObject.SetActive(true);
     }
 }
