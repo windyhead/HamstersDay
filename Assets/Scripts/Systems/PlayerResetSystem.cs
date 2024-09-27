@@ -5,7 +5,7 @@ using Unity.Entities;
 [DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(TilesSpawnSystem))]
-partial struct PlayerOrientationResetSystem : ISystem
+partial struct PlayerResetSystem : ISystem
 {
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
@@ -25,11 +25,8 @@ partial struct PlayerOrientationResetSystem : ISystem
 	{
 		private void Execute(PlayerAspect aspect)
 		{
-			aspect.SetAction(Actions.None);
-			var tile = TilesSpawnSystem.GetTile(0, 0);
-			tile.Enter(Tile.CreatureType.Hamster);
-			aspect.SetNewOrientation(Orientation.Up,tile);
-			aspect.SetTransform(tile);
+			aspect.ResetFat();
+			aspect.ResetStamina();
 		}
 	}
 }

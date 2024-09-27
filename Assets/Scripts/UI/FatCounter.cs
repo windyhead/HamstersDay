@@ -9,7 +9,7 @@ public class FatCounter : MonoBehaviour
     {
         FatSystem.OnPlayerFatIncreased += UpdatePlayerFat;
         
-        UpdatePlayerFat(1);
+        UpdatePlayerFat(0);
     }
 
     private void OnDestroy()

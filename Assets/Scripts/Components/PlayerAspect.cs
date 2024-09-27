@@ -11,6 +11,7 @@ public readonly partial struct PlayerAspect : IAspect, ICreature
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
+	private readonly RefRW<HamsterComponent> hamsterComponent;
 	private readonly RefRW<StaminaComponent> staminaComponent;
 
 	public Actions GetAction()
@@ -90,6 +91,11 @@ public readonly partial struct PlayerAspect : IAspect, ICreature
 	public void ResetStamina()
 	{
 		staminaComponent.ValueRW.Reset();
+	}
+	
+	public void ResetFat()
+	{
+		hamsterComponent.ValueRW.Reset();
 	}
 
 	private Quaternion GetRotation()

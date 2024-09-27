@@ -8,7 +8,7 @@ using UnityEngine;
 [BurstCompile]
 [DisableAutoCreation]
 [UpdateInGroup(typeof(InitializationSystemGroup))]
-[UpdateAfter(typeof(FatResetSystem))]
+[UpdateAfter(typeof(BotEnableSystem))]
 partial struct FatSystem : ISystem
 {
 	public static Action<int> OnPlayerFatIncreased;
@@ -17,6 +17,7 @@ partial struct FatSystem : ISystem
 	[BurstCompile]
 	public void OnCreate(ref SystemState state)
 	{
+		state.RequireForUpdate<PlayerComponent>();
 		state.RequireForUpdate<HamsterComponent>();
 	}
 
@@ -28,7 +29,7 @@ partial struct FatSystem : ISystem
 		foreach (var (hamsterComponent, visualReference) in SystemAPI.Query<RefRW<HamsterComponent>,HamsterVisualReference>())
 		{
 			var nuts = hamsterComponent.ValueRO.Nuts;
-			if (nuts == 0 && hamsterComponent.ValueRO.Fat > 1)
+			if (nuts == 0 && hamsterComponent.ValueRO.Fat >= 1)
 				hamsterComponent.ValueRW.Fat --;
 			else 
 				hamsterComponent.ValueRW.Fat += nuts;
@@ -40,9 +41,9 @@ partial struct FatSystem : ISystem
 			visualReference.VisualReference.RightCheek.gameObject.SetActive(false);
 		}
 		
-		var playerQuery = new EntityQueryBuilder(Allocator.Temp).WithAspect<PlayerAspect>().WithAll<HamsterComponent>()
+		var playerQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<PlayerComponent>().WithAll<HamsterComponent>()
 			.Build(ref state);
-		var playerComponent = playerQuery.ToComponentDataArray<HamsterComponent>(Allocator.Temp).First();
-		OnPlayerFatIncreased.Invoke(playerComponent.Fat);
+		var playerHamster = playerQuery.ToComponentDataArray<HamsterComponent>(Allocator.Temp).First();
+		OnPlayerFatIncreased.Invoke(playerHamster.Fat);
 	}
 }
