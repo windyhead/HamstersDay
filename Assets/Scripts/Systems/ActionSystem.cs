@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -5,9 +6,24 @@ using Unity.Entities;
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateAfter(typeof(SnakeDecisionSystem))]
-partial class OrientationSystem : SystemBase
+partial class ActionSystem : SystemBase
 {
+	
+	public static Action<int> OnPlayerStaminaChanged;
+	
 	private EntityQuery hamsterQuery;
+	private Entity player;
+	
+	protected override void OnCreate()
+	{
+		RequireForUpdate<PlayerComponent>();
+	}
+	
+	protected override void OnStartRunning()
+	{
+		player = SystemAPI.GetSingletonEntity<PlayerComponent>();
+	}
+
 	protected override void OnUpdate()
 	{ 
 		if (!GameController.PlayerInputReceived)
@@ -28,6 +44,9 @@ partial class OrientationSystem : SystemBase
 		}
 		hamsterArray.Dispose();
 		
+		var playerStamina = SystemAPI.GetComponent<StaminaComponent>(player).StaminaLeft;
+		OnPlayerStaminaChanged?.Invoke(playerStamina);
+		
 		new SnakeHeadOrientationJob().Schedule();
 		new SnakeBodyOrientationJob().Schedule();
 	}
@@ -44,6 +63,7 @@ partial class OrientationSystem : SystemBase
 				if (!aspect.CanMove(newTile))
 					return;
 			
+				aspect.Move();
 				var oldTile = TilesSpawnSystem.GetTile(aspect.GetCoordinates().x,
 					aspect.GetCoordinates().y);
 				oldTile.Exit();
@@ -55,15 +75,24 @@ partial class OrientationSystem : SystemBase
 			}
 			case Actions.TurnLeft:
 			{
+				aspect.Move();
 				TurnLeft(aspect);
 				break;
 			}
 			
 			case Actions.TurnRight:
 			{
+				aspect.Move();
 				TurnRight(aspect);
 				break;
 			}
+			case Actions.Rest:
+			{
+				aspect.Rest();
+				break;
+			}
+			default:
+				break;
 		}
 	}
 

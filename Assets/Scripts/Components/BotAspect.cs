@@ -13,6 +13,7 @@ public readonly partial struct BotAspect : IAspect, ICreature
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
+	private readonly RefRW<StaminaComponent> staminaComponent;
 
 	public float GetRandomValue(float min,float max)=> randomComponent.ValueRW.Value.NextFloat(min, max);
 
@@ -110,6 +111,9 @@ public readonly partial struct BotAspect : IAspect, ICreature
 			return false;
 		return true;
 	}
+	
+	public bool HasStamina => staminaComponent.ValueRO.HasStamina();
+	
 	private Quaternion GetRotation()
 	{
 		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);

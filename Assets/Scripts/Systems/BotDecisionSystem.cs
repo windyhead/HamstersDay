@@ -24,10 +24,16 @@ partial struct BotDecisionSystem : ISystem
 	{
 		private void Execute(BotAspect aspect)
 		{
-			var random = aspect.GetRandomValue(0,10);
-			if (random <= 1)
+			if (!aspect.HasStamina)
 			{
-				aspect.SetAction(Actions.None);
+				aspect.SetAction(Actions.Rest);
+				return;
+			}
+			
+			var random = aspect.GetRandomValue(0,10);
+			if (random <= 0.5f)
+			{
+				aspect.SetAction(Actions.Rest);
 				return;
 			}
 

@@ -5,7 +5,8 @@ public enum Actions
 	None,
 	Move,
 	TurnLeft,
-	TurnRight
+	TurnRight,
+	Rest
 }
 
 public struct ActionComponent : IComponentData

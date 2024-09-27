@@ -2,7 +2,7 @@ using Unity.Entities;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateAfter(typeof(OrientationSystem))]
+[UpdateAfter(typeof(ActionSystem))]
 partial class SnakeElementSystem : SystemBase
 {
 	public void OnCreate(ref SystemState state)

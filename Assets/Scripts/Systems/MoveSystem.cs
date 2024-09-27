@@ -5,7 +5,7 @@ using Unity.Transforms;
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(TransformSystemGroup))]
-[UpdateAfter(typeof(OrientationSystem))]
+[UpdateAfter(typeof(ActionSystem))]
 
 partial struct MoveSystem : ISystem
 {

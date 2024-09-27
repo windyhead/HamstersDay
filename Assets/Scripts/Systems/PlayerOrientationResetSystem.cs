@@ -25,6 +25,7 @@ partial struct PlayerOrientationResetSystem : ISystem
 	{
 		private void Execute(PlayerAspect aspect)
 		{
+			aspect.ResetStamina();
 			aspect.SetAction(Actions.None);
 			var tile = TilesSpawnSystem.GetTile(0, 0);
 			tile.Enter(Tile.CreatureType.Hamster);

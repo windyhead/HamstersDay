@@ -53,6 +53,15 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rest"",
+                    ""type"": ""Button"",
+                    ""id"": ""21b0e49f-498b-4926-b721-4b991ceeb470"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -121,6 +130,28 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
                     ""action"": ""TurnRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f9e7cee-10e5-4457-b1c6-2683b82431b0"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d562756a-8889-42b7-8391-4b9b86f003f3"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -160,6 +191,7 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_TurnLeft = m_Player.FindAction("TurnLeft", throwIfNotFound: true);
         m_Player_TurnRight = m_Player.FindAction("TurnRight", throwIfNotFound: true);
+        m_Player_Rest = m_Player.FindAction("Rest", throwIfNotFound: true);
         // Application
         m_Application = asset.FindActionMap("Application", throwIfNotFound: true);
         m_Application_Quit = m_Application.FindAction("Quit", throwIfNotFound: true);
@@ -227,6 +259,7 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_TurnLeft;
     private readonly InputAction m_Player_TurnRight;
+    private readonly InputAction m_Player_Rest;
     public struct PlayerActions
     {
         private @PlayerInputSettings m_Wrapper;
@@ -234,6 +267,7 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @TurnLeft => m_Wrapper.m_Player_TurnLeft;
         public InputAction @TurnRight => m_Wrapper.m_Player_TurnRight;
+        public InputAction @Rest => m_Wrapper.m_Player_Rest;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -252,6 +286,9 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
             @TurnRight.started += instance.OnTurnRight;
             @TurnRight.performed += instance.OnTurnRight;
             @TurnRight.canceled += instance.OnTurnRight;
+            @Rest.started += instance.OnRest;
+            @Rest.performed += instance.OnRest;
+            @Rest.canceled += instance.OnRest;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -265,6 +302,9 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
             @TurnRight.started -= instance.OnTurnRight;
             @TurnRight.performed -= instance.OnTurnRight;
             @TurnRight.canceled -= instance.OnTurnRight;
+            @Rest.started -= instance.OnRest;
+            @Rest.performed -= instance.OnRest;
+            @Rest.canceled -= instance.OnRest;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -333,6 +373,7 @@ public partial class @PlayerInputSettings: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnTurnLeft(InputAction.CallbackContext context);
         void OnTurnRight(InputAction.CallbackContext context);
+        void OnRest(InputAction.CallbackContext context);
     }
     public interface IApplicationActions
     {

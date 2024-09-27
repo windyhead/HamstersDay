@@ -11,13 +11,9 @@ public readonly partial struct HamsterAspect : IAspect, ICreature
 	private readonly RefRW<LocalTransform> transformComponent;
 	private readonly RefRW<MoveComponent> moveComponent;
 	private readonly RefRW<RotationComponent> rotationComponent;
+	private readonly RefRW<StaminaComponent> staminaComponent;
 	
 	public int Fat => hamsterComponent.ValueRW.Fat;
-	
-	public void IncreaseFat()
-	{
-		hamsterComponent.ValueRW.Fat++;
-	}
 	
 	public int Nuts => hamsterComponent.ValueRW.Nuts;
 
@@ -100,9 +96,28 @@ public readonly partial struct HamsterAspect : IAspect, ICreature
 			return false;
 		return true;
 	}
+
+	public int Stamina => staminaComponent.ValueRO.Stamina;
+	public bool HasStamina => staminaComponent.ValueRO.HasStamina();
+
+	public void CalcStamina(int fat)
+	{
+		staminaComponent.ValueRW.CalcStamina(fat);
+	}
+
+	public void Move()
+	{
+		staminaComponent.ValueRW.Move();
+	}
+
+	public void Rest()
+	{
+		staminaComponent.ValueRW.Rest();
+	}
 	
 	private Quaternion GetRotation()
 	{
 		return OrientationComponent.GetRotationByOrientation(orientationComponent.ValueRW.CurrentOrientation);
 	}
+	
 }

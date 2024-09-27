@@ -52,6 +52,9 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var fatIncrease = HamsterWorld.GetOrCreateSystem(typeof(FatSystem));
 		fatIncrease.Update(HamsterWorld.Unmanaged);
 		
+		var stamina = HamsterWorld.GetOrCreateSystem(typeof(StaminaSystem));
+		stamina.Update(HamsterWorld.Unmanaged);
+		
 		var botReset = HamsterWorld.GetOrCreateSystem(typeof(BotResetSystem));
 		botReset.Update(HamsterWorld.Unmanaged);
 		
@@ -115,7 +118,7 @@ public class SystemsController : SingletonBehaviour<SystemsController>
 		var snakeDecision = HamsterWorld.GetOrCreateSystem(typeof(SnakeDecisionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(snakeDecision);
 		
-		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(OrientationSystem));
+		var orientationSystem = HamsterWorld.GetOrCreateSystem(typeof(ActionSystem));
 		simulationSystemGroup.AddSystemToUpdateList(orientationSystem);
 		
 		var snakeElementsSystem = HamsterWorld.GetOrCreateSystem(typeof(SnakeElementSystem));

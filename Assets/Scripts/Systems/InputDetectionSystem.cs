@@ -1,4 +1,3 @@
-using System;
 using Unity.Entities;
 using UnityEngine.InputSystem;
 
@@ -21,6 +20,7 @@ partial class InputDetectionSystem : SystemBase
 		playerInputSettings.Player.Move.performed += OnMove;
 		playerInputSettings.Player.TurnLeft.performed += OnTurnLeft;
 		playerInputSettings.Player.TurnRight.performed += OnTurnRight;
+		playerInputSettings.Player.Rest.performed += OnRest;
 	}
 
 	private void OnTurnRight(InputAction.CallbackContext obj)
@@ -37,6 +37,11 @@ partial class InputDetectionSystem : SystemBase
 	{
 		InputReceived(Actions.Move);
 	}
+	
+	private void OnRest(InputAction.CallbackContext obj)
+	{
+		InputReceived(Actions.Rest);
+	}
 
 	protected override void OnStopRunning()
 	{
@@ -50,13 +55,20 @@ partial class InputDetectionSystem : SystemBase
 	{
 		if(!GameController.IsTurnFinished)
 			return;
+		
 		GameController.IsTurnFinished = false;
-		SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent(){CurrentAction = action});
+		var staminaComponent = SystemAPI.GetComponent<StaminaComponent>(player);
+		
+		if(staminaComponent.HasStamina()) 
+			SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent()
+				{CurrentAction = action});
+		else
+		
+			SystemAPI.SetComponent<ActionComponent>(player,new ActionComponent()
+				{CurrentAction = Actions.Rest});
+		
 		GameController.PlayerInputReceived = true;
 	}
 
-	protected override void OnUpdate()
-	{
-		
-	}
+	protected override void OnUpdate() { }
 }

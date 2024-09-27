@@ -51,6 +51,7 @@ partial struct PlayerSpawnSystem : ISystem
 				new LocalTransform { Position = tile.Center, Scale = 3, Rotation = rotation });
 			ECB.AddComponent(newHamster,new MoveComponent{MoveFinished = true});
 			ECB.AddComponent(newHamster,new RotationComponent(){RotationFinished = true});
+			ECB.AddComponent(newHamster,new StaminaComponent(20));
 		}
 	}
 }

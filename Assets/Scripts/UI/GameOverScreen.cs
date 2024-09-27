@@ -18,6 +18,7 @@ public class GameOverScreen : MonoBehaviour
 
     public void Show()
     {
+        nameField.interactable = true;
         addEntryButton.interactable = true;
         stageText.text = GameController.CurrentStage.ToString();
         totalText.text = (GameController.CurrentStage + GameController.PlayersFat).ToString();
@@ -42,6 +43,7 @@ public class GameOverScreen : MonoBehaviour
 
     private void AddEntry()
     {
+        nameField.interactable = false;
         addEntryButton.interactable = false;
         HighscoresManager.Instance.AddScore(nameField.text);
         RefreshScores();
